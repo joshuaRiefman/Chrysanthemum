@@ -1,0 +1,6 @@
+# ninja log v5
+0	96	1674527862848934139	build.ninja	9775d9aeed061da8
+2027	2132	1674526092441274607	Chrysanthemum	3bcb0b4a70b893e1
+2	296	1673406019556871895	CMakeFiles/Chrysanthemum.dir/TEST.cpp.o	974d9fe6390b2219
+2	2027	1674526092324105344	CMakeFiles/Chrysanthemum.dir/Chrysanthemum.cpp.o	b8329a18142d9a52
+4	147	1673986374475647380	CMakeFiles/Chrysanthemum.dir/NeuralNetwork.cpp.o	f7c8da04e9fd7267
