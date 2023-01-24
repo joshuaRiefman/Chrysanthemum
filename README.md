@@ -6,7 +6,7 @@ At its core, Chrysanthemum is a neural network that aims to approximate a soluti
 
 ## How to use Chrysanthemum
 
-Chrysanthemum is currently in-progress. At the moment, Chrysanthemum's neural network is fully functional, but lacks a learning algorithm which is the next step in its development. To use Chrysanthemum, clone this repository and run the executable. Ulysses was built for the purpose of providing city data and visualizing the path created by Chrysanthemum, but you can use another program to provide and handle this data. 
+Chrysanthemum is currently in-progress. At the moment, Chrysanthemum's neural network is fully functional, but lacks a learning algorithm which is the next step in its development. To use Chrysanthemum, clone this repository and run the executable. Ulysses (https://github.com/joshuaRiefman/Ulysses) was built for the purpose of providing city data and visualizing the path created by Chrysanthemum, but you can use another program to provide and handle this data. 
 
 ## What's next?
 
