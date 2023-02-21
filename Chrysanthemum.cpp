@@ -2,7 +2,6 @@
 #include "/Users/joshuariefman/vcpkg/installed/arm64-osx/include/json/reader.h"
 #include "/Users/joshuariefman/vcpkg/installed/arm64-osx/include/json/writer.h"
 #include "/Users/joshuariefman/vcpkg/installed/arm64-osx/include/json/json.h"
-#include "Packages/eigen-3.4.0/Eigen/Eigen"
 #include "Neuron.h"
 #include "Layer.h"
 #include "helpers.h"
@@ -10,27 +9,16 @@
 #include "Chrysanthemum.h"
 
 using namespace std;
-using namespace Eigen;
 
 
-array<float, universeSize> &GetArrayFromJSON(int planetID, const Json::Value *data, array<float, universeSize> &distances, const string &fieldAccessor) {
+vector<float> &GetArrayFromJSON(int planetID, const Json::Value *data, vector<float> &distances, const string &fieldAccessor) {
     for (int i = 0; i < universeSize; ++i) {
         distances[i] = (*data)["Planets"][planetID][fieldAccessor][i].asFloat();
     }
     return distances;
 }
 
-City::City() = default;
-
-City::City(int ID, const array<float, universeSize>& DISTANCES, double DISTANCE_FROM_ORIGIN, const array<float, universeSize>& DELTA_DISTANCES, bool VISITED) {
-    id = ID;
-    distances = DISTANCES;
-    distanceFromOrigin = DISTANCE_FROM_ORIGIN;
-    deltaDistances = DELTA_DISTANCES;
-    visited = VISITED;
-}
-
-City ParseCityData(int cityID) {
+City ParseCityData(int cityID, int citiesCount) {
     ifstream filePath(DataJSONPath);
     Json::Reader reader;
     Json::Value data;
@@ -40,8 +28,14 @@ City ParseCityData(int cityID) {
 
     int id = cityID;
     double distanceFromOrigin = data["distance_from_origin"].asDouble();
-    array<float, universeSize> distances = GetArrayFromJSON(cityID, &data, distances, "distances");
-    array<float, universeSize> deltaDistances = GetArrayFromJSON(cityID, &data, deltaDistances, "deltaDistances");
+
+    vector<float> distances;
+    distances.resize(citiesCount);
+    distances = GetArrayFromJSON(cityID, &data, distances, "distances");
+
+    vector<float> deltaDistances;
+    deltaDistances.resize(citiesCount);
+    deltaDistances = GetArrayFromJSON(cityID, &data, deltaDistances, "deltaDistances");
 
     City newCity(id, distances, distanceFromOrigin, deltaDistances, false);
     return newCity;
@@ -73,10 +67,11 @@ void SetOrigin() {
     cities[originCityID].visited = true;
 }
 
-void InitializePlanets() {
-    for (int i = 0; i < universeSize; i++)
+void InitializePlanets(int citiesCount) {
+    cities.resize(citiesCount);
+    for (int i = 0; i < citiesCount; i++)
     {
-        cities[i] = ParseCityData(i);
+        cities[i] = ParseCityData(i, citiesCount);
     }
 
     SetOrigin();
@@ -103,54 +98,11 @@ static InputLayer SetNetworkInputs(vector<int> *planetIDList) {
     return InputLayer(&outputs);
 }
 
-Matrix<double, Dynamic, Dynamic> GetRandomBiases(vector<int> layerSizes, int numLayers) {
-    Matrix<double, Dynamic, Dynamic> biases;
-
-    const int columns = helpers::MaxInArray(&layerSizes);
-    const int rows = numLayers;
-    biases.resize(rows, columns);
-
-    for (int i = 0; i < columns; i++) {
-        for (int j = 0; j < rows; j++) {
-            double randomizedBiases = helpers::GetRandomNormalized();
-
-            biases(i, j) = randomizedBiases;
-        }
-    }
-
-    return biases;
-}
-
-Matrix<vector<double>, Dynamic, Dynamic> GetRandomWeights(vector<int> layerSizes, int numLayers, int numInputs) {
-    Matrix<vector<double>, Dynamic, Dynamic> weights;
-
-    const int columns = helpers::MaxInArray(&layerSizes);
-    const int rows = numLayers;
-    weights.resize(numLayers, columns);
-
-    for (int i = 0; i < columns; i++) {
-        int layerInputCount = i - 1 < 0 ? numInputs : layerSizes[i - 1];
-
-        for (int j = 0; j < rows; j++) {
-            vector<double> randomizedWeights;
-            randomizedWeights.resize(layerInputCount);
-
-            for (int k = 0; k < layerInputCount; k++) {
-                randomizedWeights[k] = helpers::GetRandomNormalized();
-            }
-
-            weights(i, j) = randomizedWeights;
-        }
-    }
-
-    return weights;
-}
-
 int main() {
     auto start = chrono::system_clock::now();
 
     UpdateUniverseConstants();
-    InitializePlanets();
+    InitializePlanets(universeSize);
 
     vector<int> planetIDList;
     InputLayer inputs = SetNetworkInputs(&planetIDList);

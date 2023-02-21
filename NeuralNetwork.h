@@ -100,4 +100,8 @@ void NeuralNetwork<networkSize>::Solve(NeuralNetwork<networkSize> *network) {
 template<int networkSize>
 NeuralNetwork<networkSize>::NeuralNetwork() : layers(), size(networkSize) {}
 
+Matrix<vector<double>, Dynamic, Dynamic> GetRandomWeights(vector<int> layerSizes, int numLayers, int numInputs);
+
+Matrix<double, Dynamic, Dynamic> GetRandomBiases(vector<int> layerSizes, int numLayers);
+
 #endif //CHRYSANTHEMUM_NEURALNETWORK_H

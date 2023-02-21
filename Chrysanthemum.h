@@ -14,6 +14,14 @@
 #include <random>
 #include <chrono>
 #include <ctime>
+#include "City.h"
+#include "Neuron.h"
+#include "Layer.h"
+#include "helpers.h"
+#include "NeuralNetwork.h"
+
+using namespace std;
+using namespace Eigen;
 
 const string DataJSONPath = "../config/data.json";
 const string ConstantsJSONPath = "../config/constants.json";
@@ -22,20 +30,7 @@ const unsigned long universeSize = 15;
 
 vector<float> &GetArrayFromJSON(int planetID, const Json::Value *data, vector<float> &distances, const string &fieldAccessor);
 
-class City {
-public:
-    int id{};
-    double distanceFromOrigin{};
-    array<float, universeSize> distances{};
-    array<float, universeSize> deltaDistances{};
-    bool visited{};
-
-    City();
-
-    City(int ID, const array<float, universeSize>& DISTANCES, double DISTANCE_FROM_ORIGIN, const array<float, universeSize>& DELTA_DISTANCES, bool VISITED);
-};
-
-City cities[universeSize];
+vector<City> cities;
 int originCityID;
 
 City ParseCityData(int cityID);

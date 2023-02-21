@@ -249,6 +249,13 @@ build CMakeFiles/Chrysanthemum.dir/helpers.cpp.o: CXX_COMPILER__Chrysanthemum_De
   OBJECT_DIR = CMakeFiles/Chrysanthemum.dir
   OBJECT_FILE_DIR = CMakeFiles/Chrysanthemum.dir
 
+build CMakeFiles/Chrysanthemum.dir/City.cpp.o: CXX_COMPILER__Chrysanthemum_Debug /Users/joshuariefman/Nostradamus/Chrysanthemum/City.cpp || cmake_object_order_depends_target_Chrysanthemum
+  DEP_FILE = CMakeFiles/Chrysanthemum.dir/City.cpp.o.d
+  FLAGS = -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk -fcolor-diagnostics -std=gnu++11
+  INCLUDES = -isystem /Users/joshuariefman/vcpkg/installed/arm64-osx/include
+  OBJECT_DIR = CMakeFiles/Chrysanthemum.dir
+  OBJECT_FILE_DIR = CMakeFiles/Chrysanthemum.dir
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target Chrysanthemum
@@ -257,7 +264,7 @@ build CMakeFiles/Chrysanthemum.dir/helpers.cpp.o: CXX_COMPILER__Chrysanthemum_De
 #############################################
 # Link the executable Chrysanthemum
 
-build Chrysanthemum: CXX_EXECUTABLE_LINKER__Chrysanthemum_Debug /Users/joshuariefman/vcpkg/installed/arm64-osx/debug/lib/objects-Debug/jsoncpp_object/json_reader.cpp.o /Users/joshuariefman/vcpkg/installed/arm64-osx/debug/lib/objects-Debug/jsoncpp_object/json_value.cpp.o /Users/joshuariefman/vcpkg/installed/arm64-osx/debug/lib/objects-Debug/jsoncpp_object/json_writer.cpp.o CMakeFiles/Chrysanthemum.dir/Chrysanthemum.cpp.o CMakeFiles/Chrysanthemum.dir/NeuralNetwork.cpp.o CMakeFiles/Chrysanthemum.dir/Layer.cpp.o CMakeFiles/Chrysanthemum.dir/Neuron.cpp.o CMakeFiles/Chrysanthemum.dir/helpers.cpp.o | /Users/joshuariefman/vcpkg/installed/arm64-osx/debug/lib/libjsoncpp.a /Users/joshuariefman/vcpkg/installed/arm64-osx/debug/lib/libjsoncpp.a
+build Chrysanthemum: CXX_EXECUTABLE_LINKER__Chrysanthemum_Debug /Users/joshuariefman/vcpkg/installed/arm64-osx/debug/lib/objects-Debug/jsoncpp_object/json_reader.cpp.o /Users/joshuariefman/vcpkg/installed/arm64-osx/debug/lib/objects-Debug/jsoncpp_object/json_value.cpp.o /Users/joshuariefman/vcpkg/installed/arm64-osx/debug/lib/objects-Debug/jsoncpp_object/json_writer.cpp.o CMakeFiles/Chrysanthemum.dir/Chrysanthemum.cpp.o CMakeFiles/Chrysanthemum.dir/NeuralNetwork.cpp.o CMakeFiles/Chrysanthemum.dir/Layer.cpp.o CMakeFiles/Chrysanthemum.dir/Neuron.cpp.o CMakeFiles/Chrysanthemum.dir/helpers.cpp.o CMakeFiles/Chrysanthemum.dir/City.cpp.o | /Users/joshuariefman/vcpkg/installed/arm64-osx/debug/lib/libjsoncpp.a /Users/joshuariefman/vcpkg/installed/arm64-osx/debug/lib/libjsoncpp.a
   FLAGS = -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk
   LINK_LIBRARIES = /Users/joshuariefman/vcpkg/installed/arm64-osx/debug/lib/libjsoncpp.a  /Users/joshuariefman/vcpkg/installed/arm64-osx/debug/lib/libjsoncpp.a
   OBJECT_DIR = CMakeFiles/Chrysanthemum.dir
