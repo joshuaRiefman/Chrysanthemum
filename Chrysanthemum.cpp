@@ -11,32 +11,32 @@
 #include "/Users/joshuariefman/vcpkg/installed/arm64-osx/include/json/reader.h"
 #include "/Users/joshuariefman/vcpkg/installed/arm64-osx/include/json/writer.h"
 #include "/Users/joshuariefman/vcpkg/installed/arm64-osx/include/json/json.h"
-#include "/Users/joshuariefman/Nostradamus/Chrysanthemum/Packages/eigen-3.4.0/Eigen/Eigen"
+#include "Packages/eigen-3.4.0/Eigen/Eigen"
 #include "NeuralNetwork.h"
 
 using namespace std;
 using namespace Eigen;
 
-const string DataJSONPath = "/Users/joshuariefman/Nostradamus/Chrysanthemum/data.json";
-const string ConstantsJSONPath = "/Users/joshuariefman/Nostradamus/Chrysanthemum/constants.json";
-const string PathJSONPath = "/Users/joshuariefman/Nostradamus/Chrysanthemum/path.json";
-const unsigned long universeSize = 3;
+const string DataJSONPath = "../config/data.json";
+const string ConstantsJSONPath = "../config/constants.json";
+const string PathJSONPath = "../config/path.json";
+const unsigned long universeSize = 15;
 
-static int Sum(vector<int> *layerSizes) {
+static int Sum(vector<int> *array) {
     int result = 0;
 
-    for (int i = 0; i < layerSizes->size(); i++) {
-        result += (*layerSizes)[i];
+    for (int i = 0; i < array->size(); i++) {
+        result += (*array)[i];
     }
 
     return result;
 }
 
-static int MaxInArray(vector<int> *pVector) {
+static int MaxInArray(vector<int> *array) {
     int max = 0;
 
-    for (int i = 0; i < pVector->size(); i++) {
-        if ((*pVector)[i] > max) { max = (*pVector)[i]; }
+    for (int i = 0; i < array->size(); i++) {
+        if ((*array)[i] > max) { max = (*array)[i]; }
     }
 
     return max;
@@ -60,29 +60,36 @@ double GetRandomNormalized() {
     return (float)distribution(gen)/1000;
 }
 
-class Planet {
-    public:
-        int id;
-        double distanceFromOrigin;
-        array<float, universeSize> distances{};
-        array<float, universeSize> deltaDistances{};
-        bool visited;
+double GetDuration(const chrono::time_point<chrono::system_clock> &start) {
+    auto end = chrono::system_clock::now();
+    double elapsed_seconds = (end - start).count();
+    time_t end_time = chrono::system_clock::to_time_t(end);
+    return elapsed_seconds;
+}
 
-        Planet() = default;
+class City {
+public:
+    int id;
+    double distanceFromOrigin;
+    array<float, universeSize> distances{};
+    array<float, universeSize> deltaDistances{};
+    bool visited;
 
-        Planet(int ID, array<float, universeSize> DISTANCES, double DISTANCEFROMORIGIN, array<float, universeSize> DELTADISTANCES, bool VISITED) {
-            id = ID;
-            distances = DISTANCES;
-            distanceFromOrigin = DISTANCEFROMORIGIN;
-            deltaDistances = DELTADISTANCES;
-            visited = VISITED;
-        }
+    City() = default;
+
+    City(int ID, array<float, universeSize> DISTANCES, double DISTANCEFROMORIGIN, array<float, universeSize> DELTADISTANCES, bool VISITED) {
+        id = ID;
+        distances = DISTANCES;
+        distanceFromOrigin = DISTANCEFROMORIGIN;
+        deltaDistances = DELTADISTANCES;
+        visited = VISITED;
+    }
 };
 
-Planet planets[universeSize];
-int originPlanetID;
+City cities[universeSize];
+int originCityID;
 
-Planet ParsePlanetData(int planetID) {
+City ParseCityData(int cityID) {
     ifstream filePath(DataJSONPath);
     Json::Reader reader;
     Json::Value data;
@@ -90,30 +97,30 @@ Planet ParsePlanetData(int planetID) {
     reader.parse(filePath, data);
     filePath.close();
 
-    int id = planetID;
+    int id = cityID;
     double distanceFromOrigin = data["distance_from_origin"].asDouble();
-    array<float, universeSize> distances = GetArrayFromJSON(planetID, &data, distances, "distances");
-    array<float, universeSize> deltaDistances = GetArrayFromJSON(planetID, &data, deltaDistances,  "deltaDistances");
+    array<float, universeSize> distances = GetArrayFromJSON(cityID, &data, distances, "distances");
+    array<float, universeSize> deltaDistances = GetArrayFromJSON(cityID, &data, deltaDistances, "deltaDistances");
 
-    Planet newPlanet(id, distances, distanceFromOrigin, deltaDistances, false);
-    return newPlanet;
+    City newCity(id, distances, distanceFromOrigin, deltaDistances, false);
+    return newCity;
 }
 
-void UpdateUniverseConstants() { 
+void UpdateUniverseConstants() {
     Json::StreamWriterBuilder builder;
     builder["commentStyle"] = "None";
     builder["indentation"] = "    ";
 
     Json::Value value;
     value["universeSize"] = (int)universeSize;
-    
+
     ofstream outputFileStream(ConstantsJSONPath);
     builder.newStreamWriter()->write(value, &outputFileStream);
 
     outputFileStream.close();
- }
+}
 
- void SetOrigin() {
+void SetOrigin() {
     ifstream filePath(DataJSONPath);
     Json::Reader reader;
     Json::Value data;
@@ -121,14 +128,14 @@ void UpdateUniverseConstants() {
     reader.parse(filePath, data);
     filePath.close();
 
-    originPlanetID = data["starting_position"].asInt();
-    planets[originPlanetID].visited = true;
- }
+    originCityID = data["starting_position"].asInt();
+    cities[originCityID].visited = true;
+}
 
 void InitializePlanets() {
     for (int i = 0; i < universeSize; i++)
     {
-        planets[i] = ParsePlanetData(i);
+        cities[i] = ParseCityData(i);
     }
 
     SetOrigin();
@@ -137,14 +144,29 @@ void InitializePlanets() {
 class Neuron {
 public:
     Neuron(double activation, const vector<double> &weights, double bias)
-    : activation(activation), weights(weights), bias(bias) {}
+            : activation(activation), weights(weights), bias(bias) {}
 
     Neuron() : activation(0), weights({1, 1, 1}), bias(1.5) {};
 
-    double bias{};//turn into pointer
+    double bias{};
     double activation = 0;
-    vector<double> weights{}; //turn into pointer to matrix
+    vector<double> weights{};
+
+    static int GetHighestNeuronActivationById(vector<Neuron> *neurons) {
+        double highestActivation = 0;
+        int neuronWithHighestActivationID;
+
+        for (int i = 0; i < neurons->size(); i++) {
+            if ((*neurons)[i].activation > highestActivation) {
+                highestActivation = (*neurons)[i].activation;
+                neuronWithHighestActivationID = i;
+            }
+        }
+
+        return neuronWithHighestActivationID;
+    }
 };
+
 
 class Layer {
 public:
@@ -190,17 +212,17 @@ static InputLayer SetNetworkInputs(vector<int> *planetIDList) {
     vector<double> outputs;
     for (int i = 0; i < universeSize; ++i) {
 
-        if (planets[i].visited) {
+        if (cities[i].visited) {
             outputs.emplace_back(1);
         } else { outputs.emplace_back(0); }
 
-        planetIDList->emplace_back(planets[i].id);
+        planetIDList->emplace_back(cities[i].id);
 
-        for (int j = 0; j < planets[i].distances.size(); ++j) {
-            outputs.emplace_back(planets[i].distances[j]);
+        for (int j = 0; j < cities[i].distances.size(); ++j) {
+            outputs.emplace_back(cities[i].distances[j]);
         }
-//        for (int j = 0; j < planets[i].deltaDistances.size(); ++j) {
-//            outputs.emplace_back(planets[i].deltaDistances[j]);
+//        for (int j = 0; j < cities[i].deltaDistances.size(); ++j) {
+//            outputs.emplace_back(cities[i].deltaDistances[j]);
 //        }
     }
 
@@ -215,7 +237,7 @@ struct NeuralNetworkConfiguration {
     NeuralNetworkConfiguration(const vector<int> &layerSizes, InputLayer inputs,
                                const Matrix<vector<double>, Dynamic, Dynamic> &weights,
                                const Matrix<double, Dynamic, Dynamic> &biases, const vector<int> &planetIDList)
-                               : layerSizes(layerSizes), inputValues(std::move(inputs)), weights(weights), biases(biases), planetIDList(planetIDList) {}
+            : layerSizes(layerSizes), inputValues(std::move(inputs)), weights(weights), biases(biases), planetIDList(planetIDList) {}
 
     Matrix<vector<double>, Dynamic, Dynamic> weights{};
     Matrix<double, Dynamic, Dynamic> biases{};
@@ -347,9 +369,11 @@ int main() {
         cout << to_string(neuralNetwork.layers[neuralNetwork.size-1].outputs[i].activation) << endl;
     }
 
-    auto end = chrono::system_clock::now();
-    chrono::duration<double> elapsed_seconds = end-start;
-    time_t end_time = std::chrono::system_clock::to_time_t(end);
+    int newPosition = Neuron::GetHighestNeuronActivationById(&neuralNetwork.layers[1].outputs);
 
-    cout << "Executed successfully in " + to_string(elapsed_seconds.count()) + "s!\n";
+    cout << "New Position is: " + to_string(newPosition) << endl;
+
+    double elapsed_seconds = GetDuration(start);
+
+    cout << "Executed successfully in " + to_string(elapsed_seconds) + "s!\n";
 }
