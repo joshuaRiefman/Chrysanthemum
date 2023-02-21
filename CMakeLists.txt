@@ -4,7 +4,7 @@ project(Chrysanthemum VERSION 0.1.0)
 include(CTest)
 enable_testing()
 
-add_executable(Chrysanthemum Chrysanthemum.cpp NeuralNetwork.h NeuralNetwork.cpp)
+add_executable(Chrysanthemum Chrysanthemum.cpp NeuralNetwork.cpp NeuralNetwork.h Layer.cpp Layer.h Neuron.cpp Neuron.h helpers.cpp helpers.h Chrysanthemum.h)
 
 set(CMAKE_TOOLCHAIN_FILE "-DCMAKE_TOOLCHAIN_FILE=/Users/joshuariefman/vcpkg/scripts/buildsystems/vcpkg.cmake")
 set(eigen_DIR "/Users/joshuariefman/Nostradamus/Chrysanthemum/Packages/eigen-3.4.0")

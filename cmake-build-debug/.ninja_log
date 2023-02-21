@@ -1,6 +1,23 @@
 # ninja log v5
-0	96	1674527862848934139	build.ninja	9775d9aeed061da8
-2027	2132	1674526092441274607	Chrysanthemum	3bcb0b4a70b893e1
+0	96	1676964411618523428	build.ninja	9775d9aeed061da8
+1561	1622	1676964356170689661	Chrysanthemum	35d57c12ea8c6625
 2	296	1673406019556871895	CMakeFiles/Chrysanthemum.dir/TEST.cpp.o	974d9fe6390b2219
-2	2027	1674526092324105344	CMakeFiles/Chrysanthemum.dir/Chrysanthemum.cpp.o	b8329a18142d9a52
-4	147	1673986374475647380	CMakeFiles/Chrysanthemum.dir/NeuralNetwork.cpp.o	f7c8da04e9fd7267
+4	1561	1676964356105286492	CMakeFiles/Chrysanthemum.dir/Chrysanthemum.cpp.o	b8329a18142d9a52
+7	334	1676949121305712302	CMakeFiles/Chrysanthemum.dir/Neuron.cpp.o	8d887b30c8c2d44d
+3	340	1676961676625036165	CMakeFiles/Chrysanthemum.dir/Layer.cpp.o	caab0015131fa544
+5	1398	1676964355937125708	CMakeFiles/Chrysanthemum.dir/NeuralNetwork.cpp.o	f7c8da04e9fd7267
+5	312	1676964354858749734	CMakeFiles/Chrysanthemum.dir/helpers.cpp.o	6d6cac6177f075d8
+5	784	1676964446516960630	CMakeFiles/Chrysanthemum.dir/Chrysanthemum.cpp.o	b8329a18142d9a52
+784	831	1676964446567665823	Chrysanthemum	35d57c12ea8c6625
+3	957	1676964469781045520	CMakeFiles/Chrysanthemum.dir/Chrysanthemum.cpp.o	b8329a18142d9a52
+957	1007	1676964469835001721	Chrysanthemum	35d57c12ea8c6625
+6	408	1676964969900123276	CMakeFiles/Chrysanthemum.dir/helpers.cpp.o	6d6cac6177f075d8
+5	895	1676964970387001608	CMakeFiles/Chrysanthemum.dir/NeuralNetwork.cpp.o	f7c8da04e9fd7267
+5	1028	1676964970518349536	CMakeFiles/Chrysanthemum.dir/Chrysanthemum.cpp.o	b8329a18142d9a52
+1028	1079	1676964970574224350	Chrysanthemum	35d57c12ea8c6625
+2	899	1676965595458301025	CMakeFiles/Chrysanthemum.dir/Chrysanthemum.cpp.o	b8329a18142d9a52
+899	951	1676965595516484095	Chrysanthemum	35d57c12ea8c6625
+2	1424	1676965688062330519	CMakeFiles/Chrysanthemum.dir/Chrysanthemum.cpp.o	b8329a18142d9a52
+1425	1535	1676965688181161280	Chrysanthemum	35d57c12ea8c6625
+3	1372	1676965736342155704	CMakeFiles/Chrysanthemum.dir/Chrysanthemum.cpp.o	b8329a18142d9a52
+1372	1440	1676965736420126123	Chrysanthemum	35d57c12ea8c6625
