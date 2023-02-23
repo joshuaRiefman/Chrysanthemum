@@ -98,29 +98,39 @@ static InputLayer SetNetworkInputs(vector<int> *planetIDList) {
     return InputLayer(&outputs);
 }
 
-int main() {
-    auto start = chrono::system_clock::now();
-
+void InitializeWorld() {
     UpdateUniverseConstants();
     InitializePlanets(universeSize);
+}
 
+NeuralNetworkConfiguration CreateConfig(int numOutputs) {
     vector<int> planetIDList;
     InputLayer inputs = SetNetworkInputs(&planetIDList);
     vector<int> layerSizes = {2, 4, 4, 3};
     Matrix<vector<double>, Dynamic, Dynamic> weights = GetRandomWeights(layerSizes, (int)layerSizes.size(), (int)inputs.outputs.size());
     Matrix<double, Dynamic, Dynamic> biases = GetRandomBiases(layerSizes, (int)layerSizes.size());
 
-    NeuralNetworkConfiguration config = NeuralNetworkConfiguration(layerSizes, inputs, weights, biases, planetIDList);
-    NeuralNetwork<4> neuralNetwork = NeuralNetwork<4>(&neuralNetwork, &config);
+    NeuralNetworkConfiguration config = NeuralNetworkConfiguration(layerSizes, inputs, weights, biases, planetIDList, numOutputs);
+    return config;
+}
 
-    neuralNetwork.Solve(&neuralNetwork);
+int main() {
+    auto start = chrono::system_clock::now();
+
+    InitializeWorld();
+
+    NeuralNetworkConfiguration config = CreateConfig((int)cities.size());
+
+    NeuralNetwork neuralNetwork = NeuralNetwork(&neuralNetwork, &config);
+
+    NeuralNetwork::Solve(&neuralNetwork);
 
     for (int i = 0; i < neuralNetwork.layers[neuralNetwork.size-1].outputs.size(); i++) {
         cout << to_string(neuralNetwork.layers[neuralNetwork.size-1].outputs[i].activation) << endl;
     }
 
-    int newPosition = Neuron::GetHighestNeuronActivationById(&neuralNetwork.layers[1].outputs);
-
+    int newPosition = Neuron::GetHighestNeuronActivationById(&neuralNetwork.layers[3].outputs); //Not getting correct layer
+    //Cities should be put in as inputs in decreasing order in terms of distance
     cout << "New Position is: " + to_string(newPosition) << endl;
 
     long elapsed_seconds = helpers::GetDuration(start);
