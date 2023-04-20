@@ -1,3 +1,5 @@
-/NeuralNetwork.dSYM/
-/Packages/
-/cmake-build-debug
+NeuralNetwork.dSYM
+Packages
+cmake-build-debug
+.idea
+build
