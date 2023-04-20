@@ -7,17 +7,19 @@
 
 #include <vector>
 
+using std::vector;
+
 class Neuron {
 public:
     double bias{};
     double activation{};
-    std::vector<double> weights{};
+    vector<double> weights{};
 
-    Neuron(double activation, const std::vector<double> &weights, double bias);
+    Neuron(double activation, const vector<double> &weights, double bias);
 
     Neuron();
 
-    static int GetHighestNeuronActivationById(std::vector<Neuron> *neurons);
+    static int GetHighestNeuronActivationById(vector<Neuron> *neurons);
 };
 
 

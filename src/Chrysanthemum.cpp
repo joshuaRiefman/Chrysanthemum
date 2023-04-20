@@ -1,8 +1,4 @@
 #include "../include/jsoncpp/json/json.h"
-#include "Neuron.h"
-#include "Layer.h"
-#include "helpers.h"
-#include "NeuralNetwork.h"
 #include "Chrysanthemum.h"
 
 std::vector<float> &GetArrayFromJSON(int planetID, const Json::Value *data, std::vector<float> &distances, const std::string &fieldAccessor) {

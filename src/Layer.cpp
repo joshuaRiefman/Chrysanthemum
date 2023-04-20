@@ -22,7 +22,7 @@ Layer Layer::CreateLayer(int numOutputs, int numInputs) {
     return {numOutputs, numInputs};
 }
 
-InputLayer::InputLayer(std::vector<double> *INPUTS) {
+InputLayer::InputLayer(vector<double> *INPUTS) {
     d_inputs = *INPUTS;
 
     outputs.resize(d_inputs.size());

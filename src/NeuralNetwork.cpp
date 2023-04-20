@@ -5,14 +5,14 @@
 #include "NeuralNetwork.h"
 #include "helpers.h"
 
-NeuralNetworkConfiguration::NeuralNetworkConfiguration(const std::vector<int> &layerSizes, InputLayer inputs,
-                                                       const Eigen::Matrix<std::vector<double>, Eigen::Dynamic, Eigen::Dynamic> &weights,
-                                                       const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> &biases,
-                                                       const std::vector<int> &planetIDList, int numOutputs)
+NeuralNetworkConfiguration::NeuralNetworkConfiguration(const vector<int> &layerSizes, InputLayer inputs,
+                                                       const Matrix<vector<double>, Dynamic, Dynamic> &weights,
+                                                       const Matrix<double, Dynamic, Dynamic> &biases,
+                                                       const vector<int> &planetIDList, int numOutputs)
                                                        : layerSizes(layerSizes), inputValues(std::move(inputs)), weights(weights), biases(biases), planetIDList(planetIDList), numOutputs(numOutputs) {}
 
-Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> GetRandomBiases(std::vector<int> layerSizes, int numLayers) {
-    Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> biases;
+Matrix<double, Dynamic, Dynamic> GetRandomBiases(vector<int> layerSizes, int numLayers) {
+    Matrix<double, Dynamic, Dynamic> biases;
 
     const int columns = helpers::MaxInArray(&layerSizes);
     const int rows = numLayers;
@@ -29,8 +29,8 @@ Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> GetRandomBiases(std::vecto
     return biases;
 }
 
-Eigen::Matrix<std::vector<double>, Eigen::Dynamic, Eigen::Dynamic> GetRandomWeights(std::vector<int> layerSizes, int numLayers, int numInputs) {
-    Eigen::Matrix<std::vector<double>, Eigen::Dynamic, Eigen::Dynamic> weights;
+Matrix<vector<double>, Dynamic, Dynamic> GetRandomWeights(vector<int> layerSizes, int numLayers, int numInputs) {
+    Matrix<vector<double>, Dynamic, Dynamic> weights;
 
     const int columns = helpers::MaxInArray(&layerSizes);
     const int rows = numLayers;
@@ -40,7 +40,7 @@ Eigen::Matrix<std::vector<double>, Eigen::Dynamic, Eigen::Dynamic> GetRandomWeig
         int layerInputCount = i - 1 < 0 ? numInputs : layerSizes[i - 1];
 
         for (int j = 0; j < rows; j++) {
-            std::vector<double> randomizedWeights;
+            vector<double> randomizedWeights;
             randomizedWeights.resize(layerInputCount);
 
             for (int k = 0; k < layerInputCount; k++) {

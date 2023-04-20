@@ -10,28 +10,31 @@
 #include "helpers.h"
 #include "../include/Eigen/Eigen"
 
+using Eigen::Dynamic;
+using Eigen::Matrix;
+
 struct NeuralNetworkConfiguration {
-    std::vector<int> layerSizes;
-    std::vector<int> planetIDList;
+    vector<int> layerSizes;
+    vector<int> planetIDList;
     InputLayer inputValues;
-    Eigen::Matrix<std::vector<double>, Eigen::Dynamic, Eigen::Dynamic> weights; //TODO: Convert to Tensor!
-    Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> biases;
+    Matrix<vector<double>, Dynamic, Dynamic> weights; //TODO: Convert to Tensor!
+    Matrix<double, Dynamic, Dynamic> biases;
     int numOutputs;
 
-    NeuralNetworkConfiguration(const std::vector<int> &layerSizes,
+    NeuralNetworkConfiguration(const vector<int> &layerSizes,
                                InputLayer inputs,
-                               const Eigen::Matrix<std::vector<double>,Eigen::Dynamic, Eigen::Dynamic> &weights,
-                               const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> &biases,
-                               const std::vector<int> &planetIDList, int numOutputs);
+                               const Matrix<vector<double>,Dynamic, Dynamic> &weights,
+                               const Matrix<double, Dynamic, Dynamic> &biases,
+                               const vector<int> &planetIDList, int numOutputs);
 };
 
 class NeuralNetwork {
 public:
     NeuralNetwork();
 
-    Eigen::Matrix<std::vector<double>, Eigen::Dynamic, Eigen::Dynamic> weights;
-    Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> biases;
-    std::vector<Layer> layers;
+    Matrix<vector<double>, Dynamic, Dynamic> weights;
+    Matrix<double, Dynamic, Dynamic> biases;
+    vector<Layer> layers;
     InputLayer inputLayer;
     int size;
 
@@ -40,8 +43,8 @@ public:
     static void Solve(NeuralNetwork *network);
 };
 
-Eigen::Matrix<std::vector<double>, Eigen::Dynamic, Eigen::Dynamic> GetRandomWeights(std::vector<int> layerSizes, int numLayers, int numInputs);
+Matrix<vector<double>, Dynamic, Dynamic> GetRandomWeights(vector<int> layerSizes, int numLayers, int numInputs);
 
-Eigen::Matrix<double,Eigen:: Dynamic, Eigen::Dynamic> GetRandomBiases(std::vector<int> layerSizes, int numLayers);
+Matrix<double, Dynamic, Dynamic> GetRandomBiases(vector<int> layerSizes, int numLayers);
 
 #endif //CHRYSANTHEMUM_NEURALNETWORK_H

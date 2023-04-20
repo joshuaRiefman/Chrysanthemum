@@ -9,8 +9,8 @@
 
 class Layer {
 public:
-    std::vector<Neuron> outputs;
-    std::vector<double> inputs;
+    vector<Neuron> outputs;
+    vector<double> inputs;
 
     Layer(int numOutputs, int numInputs);
 
@@ -21,9 +21,9 @@ public:
 
 struct InputLayer : Layer {
 
-    std::vector<double> d_inputs;
+    vector<double> d_inputs;
 
-    explicit InputLayer(std::vector<double> *INPUTS);
+    explicit InputLayer(vector<double> *INPUTS);
 
     InputLayer();
 };

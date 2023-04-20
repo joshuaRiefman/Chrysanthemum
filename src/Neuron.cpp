@@ -4,12 +4,12 @@
 
 #include "Neuron.h"
 
-Neuron::Neuron(double activation, const std::vector<double> &weights, double bias)
+Neuron::Neuron(double activation, const vector<double> &weights, double bias)
         : activation(activation), weights(weights), bias(bias) {}
 
 Neuron::Neuron() : activation(0), weights({1, 1, 1}), bias(1.5) {};
 
-int Neuron::GetHighestNeuronActivationById(std::vector<Neuron> *neurons) {
+int Neuron::GetHighestNeuronActivationById(vector<Neuron> *neurons) {
     double highestActivation = 0;
     int neuronWithHighestActivationID;
 
