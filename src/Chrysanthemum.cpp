@@ -1,7 +1,7 @@
 #include "../include/jsoncpp/json/json.h"
 #include "Chrysanthemum.h"
 
-std::vector<float> &GetArrayFromJSON(int planetID, const Json::Value *data, std::vector<float> &distances, const std::string &fieldAccessor) {
+vector<float> &GetArrayFromJSON(int planetID, const Json::Value *data, std::vector<float> &distances, const std::string &fieldAccessor) {
     for (int i = 0; i < universeSize; ++i) {
         distances[i] = (*data)["Planets"][planetID][fieldAccessor][i].asFloat();
     }
@@ -19,11 +19,11 @@ City ParseCityData(int cityID, int citiesCount) {
     int id = cityID;
     double distanceFromOrigin = data["distance_from_origin"].asDouble();
 
-    std::vector<float> distances;
+    vector<float> distances;
     distances.resize(citiesCount);
     distances = GetArrayFromJSON(cityID, &data, distances, "distances");
 
-    std::vector<float> deltaDistances;
+    vector<float> deltaDistances;
     deltaDistances.resize(citiesCount);
     deltaDistances = GetArrayFromJSON(cityID, &data, deltaDistances, "deltaDistances");
 
@@ -67,8 +67,8 @@ void InitializePlanets(int citiesCount) {
     SetOrigin();
 }
 
-static InputLayer SetNetworkInputs(std::vector<int> *planetIDList) {
-    std::vector<double> outputs;
+static InputLayer SetNetworkInputs(vector<int> *planetIDList) {
+    vector<double> outputs;
     for (int i = 0; i < universeSize; ++i) {
 
         if (cities[i].visited) {
@@ -94,11 +94,13 @@ void InitializeWorld() {
 }
 
 NeuralNetworkConfiguration CreateConfig(int numOutputs) {
-    std::vector<int> planetIDList;
+    vector<int> planetIDList;
     InputLayer inputs = SetNetworkInputs(&planetIDList);
-    std::vector<int> layerSizes = {2, 4, 4, 3};
-    Eigen::Matrix<std::vector<double>, Eigen::Dynamic, Eigen::Dynamic> weights = GetRandomWeights(layerSizes, (int)layerSizes.size(), (int)inputs.outputs.size());
-    Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> biases = GetRandomBiases(layerSizes, (int)layerSizes.size());
+    //2, 4, 4, 3 to stop the error
+    vector<int> layerSizes = {2, 12, 8, 3};
+    Matrix<vector<double>, Dynamic, Dynamic> weights = GetRandomWeights(layerSizes, (int)layerSizes.size(), (int)inputs.outputs.size());
+
+    Matrix<double, Dynamic, Dynamic> biases = GetRandomBiases(layerSizes, (int)layerSizes.size());
 
     NeuralNetworkConfiguration config = NeuralNetworkConfiguration(layerSizes, inputs, weights, biases, planetIDList, numOutputs);
     return config;

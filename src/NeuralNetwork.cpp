@@ -18,8 +18,8 @@ Matrix<double, Dynamic, Dynamic> GetRandomBiases(vector<int> layerSizes, int num
     const int rows = numLayers;
     biases.resize(rows, columns);
 
-    for (int i = 0; i < columns; i++) {
-        for (int j = 0; j < rows; j++) {
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < columns; j++) {
             double randomizedBiases = helpers::GetRandomNormalized();
 
             biases(i, j) = randomizedBiases;
@@ -36,10 +36,10 @@ Matrix<vector<double>, Dynamic, Dynamic> GetRandomWeights(vector<int> layerSizes
     const int rows = numLayers;
     weights.resize(numLayers, columns);
 
-    for (int i = 0; i < columns; i++) {
-        int layerInputCount = i - 1 < 0 ? numInputs : layerSizes[i - 1];
+    for (int i = 0; i < rows; i++) {
+        int layerInputCount = i == 0 ? numInputs : layerSizes[i - 1];
 
-        for (int j = 0; j < rows; j++) {
+        for (int j = 0; j < columns; j++) {
             vector<double> randomizedWeights;
             randomizedWeights.resize(layerInputCount);
 
@@ -48,6 +48,7 @@ Matrix<vector<double>, Dynamic, Dynamic> GetRandomWeights(vector<int> layerSizes
             }
 
             weights(i, j) = randomizedWeights;
+
         }
     }
 
@@ -70,7 +71,7 @@ NeuralNetwork::NeuralNetwork(NeuralNetwork *network, NeuralNetworkConfiguration 
         int numOutputs = config->layerSizes[i];
         int numInputs;
         if (i-1 < 0) {
-            numInputs = (int)config->inputValues.inputs.size();
+            numInputs = (int)config->inputValues.d_inputs.size();
         } else
         {
             numInputs = config->layerSizes[i-1];
