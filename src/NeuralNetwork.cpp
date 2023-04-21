@@ -67,7 +67,7 @@ NeuralNetwork::NeuralNetwork(NeuralNetwork *network, NeuralNetworkConfiguration 
 
     network->inputLayer = config->inputValues;
 
-    for (int i = 0; i <= network->size; i++) {
+    for (int i = 0; i < network->size; i++) {
         int numOutputs = config->layerSizes[i];
         int numInputs;
         if (i-1 < 0) {
