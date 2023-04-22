@@ -8,8 +8,8 @@
 NeuralNetworkConfiguration::NeuralNetworkConfiguration(const vector<int> &layerSizes, InputLayer inputs,
                                                        const Matrix<vector<double>, Dynamic, Dynamic> &weights,
                                                        const Matrix<double, Dynamic, Dynamic> &biases,
-                                                       const vector<int> &planetIDList, int numOutputs)
-                                                       : layerSizes(layerSizes), inputValues(std::move(inputs)), weights(weights), biases(biases), planetIDList(planetIDList), numOutputs(numOutputs) {}
+                                                       const vector<int> &planetIDList)
+                                                       : layerSizes(layerSizes), inputValues(std::move(inputs)), weights(weights), biases(biases), planetIDList(planetIDList) {}
 
 Matrix<double, Dynamic, Dynamic> GetRandomBiases(vector<int> layerSizes, int numLayers) {
     Matrix<double, Dynamic, Dynamic> biases;

@@ -19,13 +19,12 @@ struct NeuralNetworkConfiguration {
     InputLayer inputValues;
     Matrix<vector<double>, Dynamic, Dynamic> weights; //TODO: Convert to Tensor!
     Matrix<double, Dynamic, Dynamic> biases;
-    int numOutputs;
 
     NeuralNetworkConfiguration(const vector<int> &layerSizes,
                                InputLayer inputs,
                                const Matrix<vector<double>,Dynamic, Dynamic> &weights,
                                const Matrix<double, Dynamic, Dynamic> &biases,
-                               const vector<int> &planetIDList, int numOutputs);
+                               const vector<int> &planetIDList);
 };
 
 class NeuralNetwork {

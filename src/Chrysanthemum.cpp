@@ -93,7 +93,7 @@ void InitializeWorld() {
     InitializePlanets(universeSize);
 }
 
-NeuralNetworkConfiguration CreateConfig(int numOutputs) {
+NeuralNetworkConfiguration CreateConfig() {
     vector<int> planetIDList;
     InputLayer inputs = SetNetworkInputs(&planetIDList);
     //2, 4, 4, 3 to stop the error
@@ -102,7 +102,7 @@ NeuralNetworkConfiguration CreateConfig(int numOutputs) {
 
     Matrix<double, Dynamic, Dynamic> biases = GetRandomBiases(layerSizes, (int)layerSizes.size());
 
-    NeuralNetworkConfiguration config = NeuralNetworkConfiguration(layerSizes, inputs, weights, biases, planetIDList, numOutputs);
+    NeuralNetworkConfiguration config = NeuralNetworkConfiguration(layerSizes, inputs, weights, biases, planetIDList);
     return config;
 }
 
@@ -111,7 +111,7 @@ int main() {
 
     InitializeWorld();
 
-    NeuralNetworkConfiguration config = CreateConfig((int)cities.size());
+    NeuralNetworkConfiguration config = CreateConfig();
 
     NeuralNetwork neuralNetwork = NeuralNetwork(&neuralNetwork, &config);
 
