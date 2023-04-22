@@ -69,19 +69,13 @@ NeuralNetwork::NeuralNetwork(NeuralNetwork *network, NeuralNetworkConfiguration 
 
     for (int i = 0; i < network->size; i++) {
         int numOutputs = config->layerSizes[i];
-        int numInputs;
-        if (i-1 < 0) {
-            numInputs = (int)config->inputValues.d_inputs.size();
-        } else
-        {
-            numInputs = config->layerSizes[i-1];
-        }
+        int numInputs = i == 0 ? (int)config->inputValues.d_inputs.size() : config->layerSizes[i-1];
 
         network->layers[i] = Layer::CreateLayer(numOutputs, numInputs);
     }
 
     for (int i = 0; i < network->size; i++) {
-        for (int j = 0; j < maxNeuronCountPerLayer; j++) {
+        for (int j = 0; j < network->layers[i].outputs.size(); j++) {
             network->layers[i].outputs[j].weights = network->weights(i, j);
             network->layers[i].outputs[j].bias = network->biases(i, j);
         }
