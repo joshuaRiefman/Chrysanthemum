@@ -37,9 +37,10 @@ public:
     InputLayer inputLayer;
     int size;
 
-    NeuralNetwork(NeuralNetwork *network, NeuralNetworkConfiguration *config);
+    NeuralNetwork(NeuralNetwork *network, std::unique_ptr<NeuralNetworkConfiguration> config);
 
     static void Solve(NeuralNetwork *network);
+    static int GetHighestNeuronActivationById(std::unique_ptr<vector<Neuron>> neurons);
 };
 
 Matrix<vector<double>, Dynamic, Dynamic> GetRandomWeights(vector<int> layerSizes, int numLayers, int numInputs);

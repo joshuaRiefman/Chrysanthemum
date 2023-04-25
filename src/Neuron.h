@@ -18,8 +18,6 @@ public:
     Neuron(double activation, const vector<double> &weights, double bias);
 
     Neuron();
-
-    static int GetHighestNeuronActivationById(vector<Neuron> *neurons);
 };
 
 

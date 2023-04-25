@@ -55,7 +55,7 @@ Matrix<vector<double>, Dynamic, Dynamic> GetRandomWeights(vector<int> layerSizes
     return weights;
 }
 
-NeuralNetwork::NeuralNetwork(NeuralNetwork *network, NeuralNetworkConfiguration *config) {
+NeuralNetwork::NeuralNetwork(NeuralNetwork *network, std::unique_ptr<NeuralNetworkConfiguration> config) {
     int maxNeuronCountPerLayer = helpers::MaxInArray(&config->layerSizes);
     network->size = (int)config->layerSizes.size();
     network->layers.resize(network->size);
@@ -103,6 +103,20 @@ void NeuralNetwork::Solve(NeuralNetwork *network) {
             layer->outputs[j].activation = helpers::ReLU(layer->outputs[j].activation);
         }
     }
+}
+
+int NeuralNetwork::GetHighestNeuronActivationById(std::unique_ptr<vector<Neuron>> neurons) {
+    double highestActivation = 0;
+    int neuronWithHighestActivationID;
+
+    for (int i = 0; i < neurons->size(); i++) {
+        if ((*neurons)[i].activation > highestActivation) {
+            highestActivation = (*neurons)[i].activation;
+            neuronWithHighestActivationID = i;
+        }
+    }
+
+    return neuronWithHighestActivationID;
 }
 
 NeuralNetwork::NeuralNetwork() : layers(), size() {}

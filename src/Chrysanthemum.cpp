@@ -1,6 +1,9 @@
 #include "../include/jsoncpp/json/json.h"
 #include "Chrysanthemum.h"
 
+using std::unique_ptr;
+using std::make_unique;
+
 vector<float> &GetArrayFromJSON(int planetID, const Json::Value *data, std::vector<float> &distances, const std::string &fieldAccessor) {
     for (int i = 0; i < universeSize; ++i) {
         distances[i] = (*data)["Planets"][planetID][fieldAccessor][i].asFloat();
@@ -93,16 +96,16 @@ void InitializeWorld() {
     InitializePlanets(universeSize);
 }
 
-NeuralNetworkConfiguration CreateConfig() {
+unique_ptr<NeuralNetworkConfiguration> CreateConfig() {
     vector<int> planetIDList;
     InputLayer inputs = SetNetworkInputs(&planetIDList);
-    //2, 4, 4, 3 to stop the error
+
     vector<int> layerSizes = {2, 12, 8, 3};
     Matrix<vector<double>, Dynamic, Dynamic> weights = GetRandomWeights(layerSizes, (int)layerSizes.size(), (int)inputs.outputs.size());
 
     Matrix<double, Dynamic, Dynamic> biases = GetRandomBiases(layerSizes, (int)layerSizes.size());
 
-    NeuralNetworkConfiguration config = NeuralNetworkConfiguration(layerSizes, inputs, weights, biases, planetIDList);
+    unique_ptr<NeuralNetworkConfiguration> config = make_unique<NeuralNetworkConfiguration>(NeuralNetworkConfiguration(layerSizes, inputs, weights, biases, planetIDList));
     return config;
 }
 
@@ -111,21 +114,16 @@ int main() {
 
     InitializeWorld();
 
-    NeuralNetworkConfiguration config = CreateConfig();
-
-    NeuralNetwork neuralNetwork = NeuralNetwork(&neuralNetwork, &config);
-
+    NeuralNetwork neuralNetwork = NeuralNetwork(&neuralNetwork, CreateConfig());
     NeuralNetwork::Solve(&neuralNetwork);
 
     for (int i = 0; i < neuralNetwork.layers[neuralNetwork.size-1].outputs.size(); i++) {
         std::cout << std::to_string(neuralNetwork.layers[neuralNetwork.size-1].outputs[i].activation) << std::endl;
     }
 
-    int newPosition = Neuron::GetHighestNeuronActivationById(&neuralNetwork.layers[3].outputs); //Not getting correct layer
-    //Cities should be put in as inputs in decreasing order in terms of distance
+    int newPosition = NeuralNetwork::GetHighestNeuronActivationById(make_unique<vector<Neuron>>(neuralNetwork.layers[3].outputs)); //Not getting correct layer
+
     std::cout << "New Position is: " + std::to_string(newPosition) << std::endl;
-
     long elapsed_seconds = helpers::GetDuration(start);
-
     std::cout << "Executed successfully in " + std::to_string(elapsed_seconds) + "s!\n";
 }
