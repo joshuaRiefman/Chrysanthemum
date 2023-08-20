@@ -2,7 +2,7 @@
 // Created by Joshua Riefman on 2023-02-20.
 //
 
-#include "Neuron.h"
+#include "../include/Neuron.h"
 
 Neuron::Neuron(double activation, const vector<double> &weights, double bias)
         : activation(activation), weights(weights), bias(bias) {}

@@ -10,6 +10,7 @@
 #include <fstream>
 #include "City.h"
 #include "NeuralNetwork.h"
+#include "../external/jsoncpp/json/json.h"
 
 const std::string DataJSONPath = "../data/data.json";
 const std::string ConstantsJSONPath = "../data/constants.json";

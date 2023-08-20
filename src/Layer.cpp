@@ -2,7 +2,7 @@
 // Created by Joshua Riefman on 2023-02-20.
 //
 
-#include "Layer.h"
+#include "../include/Layer.h"
 
 
 Layer::Layer(int numOutputs, int numInputs) {

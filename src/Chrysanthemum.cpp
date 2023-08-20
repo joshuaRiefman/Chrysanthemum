@@ -1,5 +1,4 @@
-#include "../include/jsoncpp/json/json.h"
-#include "Chrysanthemum.h"
+#include "../include/Chrysanthemum.h"
 
 using std::unique_ptr;
 using std::make_unique;
@@ -117,11 +116,11 @@ int main() {
     NeuralNetwork neuralNetwork = NeuralNetwork(&neuralNetwork, CreateConfig());
     NeuralNetwork::Solve(&neuralNetwork);
 
-    for (int i = 0; i < neuralNetwork.layers[neuralNetwork.size-1].outputs.size(); i++) {
-        std::cout << std::to_string(neuralNetwork.layers[neuralNetwork.size-1].outputs[i].activation) << std::endl;
+    for (int i = 0; i < neuralNetwork.layers[neuralNetwork.size-1]->outputs.size(); i++) {
+        std::cout << std::to_string(neuralNetwork.layers[neuralNetwork.size-1]->outputs[i].activation) << std::endl;
     }
 
-    int newPosition = NeuralNetwork::GetHighestNeuronActivationById(make_unique<vector<Neuron>>(neuralNetwork.layers[3].outputs)); //Not getting correct layer
+    int newPosition = NeuralNetwork::GetHighestNeuronActivationById(make_unique<vector<Neuron>>(neuralNetwork.layers[3]->outputs)); //Not getting correct layer
 
     std::cout << "New Position is: " + std::to_string(newPosition) << std::endl;
     long elapsed_seconds = helpers::GetDuration(start);

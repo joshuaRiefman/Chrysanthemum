@@ -2,7 +2,7 @@
 // Created by Joshua Riefman on 2023-02-20.
 //
 
-#include "helpers.h"
+#include "../include/helpers.h"
 
 int helpers::MaxInArray(std::vector<int> *array) {
     int max = 0;

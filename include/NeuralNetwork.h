@@ -8,10 +8,14 @@
 #include "Neuron.h"
 #include "Layer.h"
 #include "helpers.h"
-#include "../include/Eigen/Eigen"
+#include "../external/Eigen/Eigen"
 
 using Eigen::Dynamic;
 using Eigen::Matrix;
+using std::unique_ptr;
+using std::shared_ptr;
+using std::make_unique;
+using std::make_shared;
 
 struct NeuralNetworkConfiguration {
     vector<int> layerSizes;
@@ -33,18 +37,20 @@ public:
 
     Matrix<vector<double>, Dynamic, Dynamic> weights;
     Matrix<double, Dynamic, Dynamic> biases;
-    vector<Layer> layers;
+    vector<unique_ptr<Layer>> layers;
     InputLayer inputLayer;
     int size;
 
-    NeuralNetwork(NeuralNetwork *network, std::unique_ptr<NeuralNetworkConfiguration> config);
+    NeuralNetwork(NeuralNetwork *network, unique_ptr<NeuralNetworkConfiguration> config);
 
     static void Solve(NeuralNetwork *network);
-    static int GetHighestNeuronActivationById(std::unique_ptr<vector<Neuron>> neurons);
+    static int GetHighestNeuronActivationById(unique_ptr<vector<Neuron>> neurons);
 };
 
 Matrix<vector<double>, Dynamic, Dynamic> GetRandomWeights(vector<int> layerSizes, int numLayers, int numInputs);
 
 Matrix<double, Dynamic, Dynamic> GetRandomBiases(vector<int> layerSizes, int numLayers);
+
+
 
 #endif //CHRYSANTHEMUM_NEURALNETWORK_H

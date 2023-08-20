@@ -2,8 +2,8 @@
 // Created by Joshua Riefman on 2023-02-20.
 //
 
-#include "NeuralNetwork.h"
-#include "helpers.h"
+#include "../include/NeuralNetwork.h"
+#include "../include/helpers.h"
 
 NeuralNetworkConfiguration::NeuralNetworkConfiguration(const vector<int> &layerSizes, InputLayer inputs,
                                                        const Matrix<vector<double>, Dynamic, Dynamic> &weights,
@@ -71,36 +71,35 @@ NeuralNetwork::NeuralNetwork(NeuralNetwork *network, std::unique_ptr<NeuralNetwo
         int numOutputs = config->layerSizes[i];
         int numInputs = i == 0 ? (int)config->inputValues.d_inputs.size() : config->layerSizes[i-1];
 
-        network->layers[i] = Layer::CreateLayer(numOutputs, numInputs);
+        network->layers[i] = make_unique<Layer>(Layer::CreateLayer(numOutputs, numInputs));
     }
 
     for (int i = 0; i < network->size; i++) {
-        for (int j = 0; j < network->layers[i].outputs.size(); j++) {
-            network->layers[i].outputs[j].weights = network->weights(i, j);
-            network->layers[i].outputs[j].bias = network->biases(i, j);
+        for (int j = 0; j < network->layers[i]->outputs.size(); j++) {
+            network->layers[i]->outputs[j].weights = network->weights(i, j);
+            network->layers[i]->outputs[j].bias = network->biases(i, j);
         }
     }
 }
 
 void NeuralNetwork::Solve(NeuralNetwork *network) {
-    for (int i = 0; i < network->layers[0].inputs.size(); ++i) {
-        network->layers[0].inputs[i] = network->inputLayer.outputs[i].activation;
+    for (int i = 0; i < network->layers[0]->inputs.size(); ++i) {
+        network->layers[0]->inputs[i] = network->inputLayer.outputs[i].activation;
     }
 
     for (int i = 0; i < network->size; i++) {
-        Layer *layer = &network->layers[i];
         if (i != 0) {
-            for (int j = 0; j < layer->inputs.size(); ++j) {
-                layer->inputs[j] = network->layers[i-1].outputs[j].activation;
+            for (int j = 0; j < network->layers[i]->inputs.size(); ++j) {
+                network->layers[i]->inputs[j] = network->layers[i-1]->outputs[j].activation;
             }
         }
 
-        for (int j = 0; j < layer->outputs.size(); j++) {
-            for (int k = 0; k < layer->inputs.size(); k++) {
-                layer->outputs[j].activation += layer->inputs[k] * layer->outputs[j].weights[k];
+        for (int j = 0; j < network->layers[i]->outputs.size(); j++) {
+            for (int k = 0; k < network->layers[i]->inputs.size(); k++) {
+                network->layers[i]->outputs[j].activation += network->layers[i]->inputs[k] * network->layers[i]->outputs[j].weights[k];
             }
-            layer->outputs[j].activation += layer->outputs[j].bias;
-            layer->outputs[j].activation = helpers::ReLU(layer->outputs[j].activation);
+            network->layers[i]->outputs[j].activation += network->layers[i]->outputs[j].bias;
+            network->layers[i]->outputs[j].activation = helpers::ReLU(network->layers[i]->outputs[j].activation);
         }
     }
 }
