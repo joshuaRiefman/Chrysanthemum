@@ -3,16 +3,11 @@
 //
 
 #include "../include/NeuralNetwork.h"
-#include "../include/helpers.h"
+#include <iostream>
+#include <utility>
 
-NeuralNetworkConfiguration::NeuralNetworkConfiguration(const vector<int> &layerSizes, InputLayer inputs,
-                                                       const Matrix<vector<double>, Dynamic, Dynamic> &weights,
-                                                       const Matrix<double, Dynamic, Dynamic> &biases,
-                                                       const vector<int> &planetIDList)
-                                                       : layerSizes(layerSizes), inputValues(std::move(inputs)), weights(weights), biases(biases), planetIDList(planetIDList) {}
-
-Matrix<double, Dynamic, Dynamic> GetRandomBiases(vector<int> layerSizes, int numLayers) {
-    Matrix<double, Dynamic, Dynamic> biases;
+bias_t GetRandomBiases(std::vector<int> layerSizes, int numLayers) {
+    bias_t biases;
 
     const int columns = helpers::MaxInArray(&layerSizes);
     const int rows = numLayers;
@@ -20,17 +15,18 @@ Matrix<double, Dynamic, Dynamic> GetRandomBiases(vector<int> layerSizes, int num
 
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < columns; j++) {
-            double randomizedBiases = helpers::GetRandomNormalized();
+//            double randomizedBiases = helpers::GetRandomNormalized();
+            double randomizedBiases = 1;
 
-            biases(i, j) = randomizedBiases;
+            biases(i, j) = std::make_shared<double>(randomizedBiases);
         }
     }
 
     return biases;
 }
 
-Matrix<vector<double>, Dynamic, Dynamic> GetRandomWeights(vector<int> layerSizes, int numLayers, int numInputs) {
-    Matrix<vector<double>, Dynamic, Dynamic> weights;
+weight_t GetRandomWeights(std::vector<int> layerSizes, const int numLayers, int numInputs) {
+    weight_t weights;
 
     const int columns = helpers::MaxInArray(&layerSizes);
     const int rows = numLayers;
@@ -40,14 +36,15 @@ Matrix<vector<double>, Dynamic, Dynamic> GetRandomWeights(vector<int> layerSizes
         int layerInputCount = i == 0 ? numInputs : layerSizes[i - 1];
 
         for (int j = 0; j < columns; j++) {
-            vector<double> randomizedWeights;
+            std::vector<double> randomizedWeights;
             randomizedWeights.resize(layerInputCount);
 
             for (int k = 0; k < layerInputCount; k++) {
-                randomizedWeights[k] = helpers::GetRandomNormalized();
+//                randomizedWeights[k] = helpers::GetRandomNormalized();
+                randomizedWeights[k] = 1;
             }
 
-            weights(i, j) = randomizedWeights;
+            weights(i, j) = std::make_shared<std::vector<double>>(randomizedWeights);
 
         }
     }
@@ -55,67 +52,82 @@ Matrix<vector<double>, Dynamic, Dynamic> GetRandomWeights(vector<int> layerSizes
     return weights;
 }
 
-NeuralNetwork::NeuralNetwork(NeuralNetwork *network, std::unique_ptr<NeuralNetworkConfiguration> config) {
-    int maxNeuronCountPerLayer = helpers::MaxInArray(&config->layerSizes);
-    network->size = (int)config->layerSizes.size();
-    network->layers.resize(network->size);
-    network->weights.resize(network->size, maxNeuronCountPerLayer);
-    network->biases.resize(network->size, maxNeuronCountPerLayer);
-
-    network->weights = config->weights;
-    network->biases = config->biases;
-
-    network->inputLayer = config->inputValues;
-
-    for (int i = 0; i < network->size; i++) {
-        int numOutputs = config->layerSizes[i];
-        int numInputs = i == 0 ? (int)config->inputValues.d_inputs.size() : config->layerSizes[i-1];
-
-        network->layers[i] = make_unique<Layer>(Layer::CreateLayer(numOutputs, numInputs));
+void NeuralNetwork::Solve() {
+    for (int i = 0; i < layers[0]->inputs.size(); ++i) {
+        layers[0]->inputs[i] = inputLayer->network_inputs[i];
     }
 
-    for (int i = 0; i < network->size; i++) {
-        for (int j = 0; j < network->layers[i]->outputs.size(); j++) {
-            network->layers[i]->outputs[j].weights = network->weights(i, j);
-            network->layers[i]->outputs[j].bias = network->biases(i, j);
-        }
-    }
-}
-
-void NeuralNetwork::Solve(NeuralNetwork *network) {
-    for (int i = 0; i < network->layers[0]->inputs.size(); ++i) {
-        network->layers[0]->inputs[i] = network->inputLayer.outputs[i].activation;
-    }
-
-    for (int i = 0; i < network->size; i++) {
+    for (int i = 0; i < size; i++) {
         if (i != 0) {
-            for (int j = 0; j < network->layers[i]->inputs.size(); ++j) {
-                network->layers[i]->inputs[j] = network->layers[i-1]->outputs[j].activation;
+            for (int j = 0; j < layers[i]->inputs.size(); ++j) {
+                layers[i]->inputs[j] = layers[i-1]->neurons[j]->activation;
             }
         }
 
-        for (int j = 0; j < network->layers[i]->outputs.size(); j++) {
-            for (int k = 0; k < network->layers[i]->inputs.size(); k++) {
-                network->layers[i]->outputs[j].activation += network->layers[i]->inputs[k] * network->layers[i]->outputs[j].weights[k];
+        for (int j = 0; j < layers[i]->neurons.size(); j++) {
+            for (int k = 0; k < layers[i]->inputs.size(); k++) {
+                layers[i]->neurons[j]->activation += layers[i]->inputs[k] * (*layers[i]->neurons[j]->weights)[k];
             }
-            network->layers[i]->outputs[j].activation += network->layers[i]->outputs[j].bias;
-            network->layers[i]->outputs[j].activation = helpers::ReLU(network->layers[i]->outputs[j].activation);
+            layers[i]->neurons[j]->activation += (*layers[i]->neurons[j]->bias);
+            layers[i]->neurons[j]->activation = helpers::ReLU(layers[i]->neurons[j]->activation);
         }
     }
 }
 
-int NeuralNetwork::GetHighestNeuronActivationById(std::unique_ptr<vector<Neuron>> neurons) {
+int NeuralNetwork::GetHighestNeuronActivationById() {
     double highestActivation = 0;
     int neuronWithHighestActivationID;
 
-    for (int i = 0; i < neurons->size(); i++) {
-        if ((*neurons)[i].activation > highestActivation) {
-            highestActivation = (*neurons)[i].activation;
+    for (int i = 0; i < layers[layers.size() - 1]->neurons.size(); i++) {
+        if (layers[layers.size() - 1]->neurons[i]->activation > highestActivation) {
+            highestActivation = layers[layers.size() - 1]->neurons[i]->activation;
             neuronWithHighestActivationID = i;
         }
     }
-
     return neuronWithHighestActivationID;
 }
 
-NeuralNetwork::NeuralNetwork() : layers(), size() {}
+NeuralNetwork::NeuralNetwork(const size_t numNetworkInputs, const std::vector<int> &layerSizes, const weight_t &in_weights, const bias_t &in_biases) {
+    int maxNeuronCountPerLayer = *std::max_element(layerSizes.begin(), layerSizes.end());
+    size = layerSizes.size();
+    layers.resize(size);
+    weights.resize((long)size, maxNeuronCountPerLayer);
+    biases.resize((long)size, maxNeuronCountPerLayer);
+
+    weights = in_weights;
+    biases = in_biases;
+
+    for (int i = 0; i < size; i++) {
+        size_t numOutputs = layerSizes[i];
+        size_t numInputs = i == 0 ? numNetworkInputs : layerSizes[i-1];
+
+        layers[i] = std::make_unique<HiddenLayer>(HiddenLayer(numOutputs, numInputs));
+    }
+
+    for (int i = 0; i < size; i++) {
+        for (int j = 0; j < layers[i]->neurons.size(); j++) {
+            layers[i]->neurons[j]->weights = weights(i, j);
+            layers[i]->neurons[j]->bias = biases(i, j);
+        }
+    }
+//    for (int i = 0; i < size; i++) {
+//        printf("Here!1");
+//        double value = layers[i]->neurons[i]->activation;
+//        layers[i]->outputs[i] = std::make_shared<double>(value);
+//    }
+}
+
+std::vector<double> NeuralNetwork::GetOutputVector() {
+    std::vector<double> output;
+    output.resize(layers[size-1]->neurons.size());
+
+    for (int i = 0; i < layers[size-1]->neurons.size(); ++i) {
+        output[i] = layers[size-1]->neurons[i]->activation;
+    }
+
+    return output;
+}
+
+void NeuralNetwork::SetInputs(std::shared_ptr<InputLayer> input) {
+    this->inputLayer = std::move(input);
+}

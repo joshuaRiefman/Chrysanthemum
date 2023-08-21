@@ -4,7 +4,11 @@
 
 #include "../include/Neuron.h"
 
-Neuron::Neuron(double activation, const vector<double> &weights, double bias)
-        : activation(activation), weights(weights), bias(bias) {}
+Neuron::Neuron() : activation(0), weights(std::make_shared<std::vector<double>>()), bias(std::make_shared<double>(1.5)) {}
 
-Neuron::Neuron() : activation(0), weights({1, 1, 1}), bias(1.5) {};
+Neuron::Neuron(std::shared_ptr<std::vector<double>> &&new_weights, std::shared_ptr<double> &new_bias) {
+    activation = 0;
+
+    weights = std::move(new_weights);
+    bias = std::move(new_bias);
+}

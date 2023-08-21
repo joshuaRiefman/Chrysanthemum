@@ -4,32 +4,17 @@
 
 #include "../include/Layer.h"
 
-
-Layer::Layer(int numOutputs, int numInputs) {
+HiddenLayer::HiddenLayer(size_t numOutputs, size_t numInputs) {
     for (int i = 0; i < numOutputs; ++i) {
-        outputs.emplace_back();
+        this->neurons.emplace_back(std::make_unique<Neuron>());
     }
 
     for (int i = 0; i < numInputs; ++i) {
-        inputs.emplace_back();
+        this->inputs.emplace_back(0);
     }
 }
 
-
-Layer::Layer() = default;
-
-Layer Layer::CreateLayer(int numOutputs, int numInputs) {
-    return {numOutputs, numInputs};
+InputLayer::InputLayer(const std::vector<double> &inputs) {
+    this->network_inputs = inputs;
+    this->numInputs = inputs.size();
 }
-
-InputLayer::InputLayer(vector<double> *INPUTS) {
-    d_inputs = *INPUTS;
-
-    outputs.resize(d_inputs.size());
-
-    for (int i = 0; i < outputs.size(); ++i) {
-        outputs[i].activation = d_inputs[i];
-    }
-}
-
-InputLayer::InputLayer() = default;

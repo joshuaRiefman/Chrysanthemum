@@ -7,17 +7,14 @@
 
 #include <vector>
 
-using std::vector;
-
-class Neuron {
-public:
-    double bias{};
+struct Neuron {
+    std::shared_ptr<double> bias{};
     double activation{};
-    vector<double> weights{};
+    std::shared_ptr<std::vector<double>> weights{};
 
-    Neuron(double activation, const vector<double> &weights, double bias);
+    explicit Neuron(std::shared_ptr<std::vector<double>> &&weights, std::shared_ptr<double> &bias);
 
-    Neuron();
+    explicit Neuron();
 };
 
 

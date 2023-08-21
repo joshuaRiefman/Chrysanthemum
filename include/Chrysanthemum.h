@@ -17,24 +17,20 @@ const std::string ConstantsJSONPath = "../data/constants.json";
 const std::string PathJSONPath = "../data/path.json";
 const unsigned long universeSize = 15;
 
-vector<float> &GetArrayFromJSON(int planetID, const Json::Value *data, vector<float> &distances, const std::string &fieldAccessor);
+std::vector<float> &GetArrayFromJSON(int planetID, const Json::Value *data, std::vector<float> &distances, const std::string &fieldAccessor);
 
-vector<City> cities;
+std::vector<City> cities;
 int originCityID;
 
-City ParseCityData(int cityID);
+City ParseCityData(int cityID, int citiesCount);
 
 void UpdateUniverseConstants();
 
 void SetOrigin();
 
-void InitializePlanets();
+void InitializePlanets(int citiesCount);
 
-static InputLayer SetNetworkInputs(std::vector<int> *planetIDList);
-
-Matrix<double, Dynamic, Dynamic> GetRandomBiases(vector<int> layerSizes, int numLayers);
-
-Matrix<vector<double>, Dynamic, Dynamic> GetRandomWeights(vector<int> layerSizes, int numLayers, int numInputs);
+static std::shared_ptr<InputLayer> SetNetworkInputs();
 
 
 #endif //CHRYSANTHEMUM_CHRYSANTHEMUM_H

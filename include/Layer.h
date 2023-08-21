@@ -7,25 +7,21 @@
 
 #include "Neuron.h"
 
-class Layer {
-public:
-    vector<Neuron> outputs;
-    vector<double> inputs;
+struct Layer {
+    std::vector<std::unique_ptr<Neuron>> neurons;
+};
 
-    Layer(int numOutputs, int numInputs);
+struct HiddenLayer : Layer {
+    std::vector<double> inputs;
 
-    Layer();
-
-    static Layer CreateLayer(int numOutputs, int numInputs);
+    explicit HiddenLayer(size_t numOutputs, size_t numInputs);
 };
 
 struct InputLayer : Layer {
+    std::vector<double> network_inputs;
+    size_t numInputs;
 
-    vector<double> d_inputs;
-
-    explicit InputLayer(vector<double> *INPUTS);
-
-    InputLayer();
+    explicit InputLayer(const std::vector<double>&inputs);
 };
 
 
