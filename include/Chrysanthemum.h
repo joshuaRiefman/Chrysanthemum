@@ -12,25 +12,15 @@
 #include "NeuralNetwork.h"
 #include "../external/jsoncpp/json/json.h"
 
-const std::string DataJSONPath = "../data/data.json";
-const std::string ConstantsJSONPath = "../data/constants.json";
-const std::string PathJSONPath = "../data/path.json";
-const unsigned long universeSize = 15;
+class Chrysanthemum {
+public:
+    enum ParameterType {
+        STANDARD,
+        RANDOM
+    };
 
-std::vector<float> &GetArrayFromJSON(int planetID, const Json::Value *data, std::vector<float> &distances, const std::string &fieldAccessor);
-
-std::vector<City> cities;
-int originCityID;
-
-City ParseCityData(int cityID, int citiesCount);
-
-void UpdateUniverseConstants();
-
-void SetOrigin();
-
-void InitializePlanets(int citiesCount);
-
-static std::shared_ptr<InputLayer> SetNetworkInputs();
-
+    static weights_tensor_t getNewWeights(std::vector<int>& layerSizes, int numInputs, ParameterType type = STANDARD);
+    static biases_matrix_t getNewBiases(std::vector<int>& layerSizes, ParameterType type = STANDARD);
+};
 
 #endif //CHRYSANTHEMUM_CHRYSANTHEMUM_H

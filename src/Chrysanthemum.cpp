@@ -4,115 +4,49 @@ void print() {
     std::cout << "Here!" << "\n";
 }
 
-std::vector<float> &GetArrayFromJSON(int planetID, const Json::Value *data, std::vector<float> &distances, const std::string &fieldAccessor) {
-    for (int i = 0; i < universeSize; ++i) {
-        distances[i] = (*data)["Planets"][planetID][fieldAccessor][i].asFloat();
-    }
-    return distances;
-}
+weights_tensor_t Chrysanthemum::getNewWeights(std::vector<int>& layerSizes, int numInputs, ParameterType type) {
+    weights_tensor_t weights;
 
-City ParseCityData(int cityID, int citiesCount) {
-    std::ifstream filePath(DataJSONPath);
-    Json::Reader reader;
-    Json::Value data;
-
-    reader.parse(filePath, data);
-    filePath.close();
-
-    int id = cityID;
-    double distanceFromOrigin = data["distance_from_origin"].asDouble();
-
-    std::vector<float> distances;
-    distances.resize(citiesCount);
-    distances = GetArrayFromJSON(cityID, &data, distances, "distances");
-
-    std::vector<float> deltaDistances;
-    deltaDistances.resize(citiesCount);
-    deltaDistances = GetArrayFromJSON(cityID, &data, deltaDistances, "deltaDistances");
-
-    City newCity(id, distances, distanceFromOrigin, deltaDistances, false);
-    return newCity;
-}
-
-void UpdateUniverseConstants() {
-    Json::StreamWriterBuilder builder;
-    builder["commentStyle"] = "None";
-    builder["indentation"] = "\t";
-
-    Json::Value value;
-    value["universeSize"] = (int)universeSize;
-
-    std::ofstream outputFileStream(ConstantsJSONPath);
-    builder.newStreamWriter()->write(value, &outputFileStream);
-
-    outputFileStream.close();
-}
-
-void SetOrigin() {
-    std::ifstream filePath(DataJSONPath);
-    Json::Reader reader;
-    Json::Value data;
-
-    reader.parse(filePath, data);
-    filePath.close();
-
-    originCityID = data["starting_position"].asInt();
-    cities[originCityID].visited = true;
-}
-
-void InitializePlanets(int citiesCount) {
-    cities.resize(citiesCount);
-    for (int i = 0; i < citiesCount; i++)
-    {
-        cities[i] = ParseCityData(i, citiesCount);
-    }
-
-    SetOrigin();
-}
-
-static std::shared_ptr<InputLayer> SetNetworkInputs() {
-    std::vector<double> outputs;
-    for (int i = 0; i < 3; ++i) {
-//
-//        if (cities[i].visited) {
-//            outputs.emplace_back(1);
-//        } else { outputs.emplace_back(0); }
-        for (float & distance : cities[i].distances) {
-            outputs.emplace_back(distance);
+    for (int i = 0; i < layerSizes.size(); i++) {
+        Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> weightMatrix;
+        const int rows = layerSizes[i];
+        const int columns = i == 0 ? numInputs : layerSizes[i - 1];
+        weightMatrix.resize(rows, columns);
+        for (int j = 0; j < rows; ++j) {
+            for (int k = 0; k < columns; ++k) {
+                if (type == RANDOM) {
+                    weightMatrix(j, k) = helpers::GetRandomNormalized();
+                } else if (type == STANDARD) {
+                    weightMatrix(j, k) = 1;
+                } else {
+                    std::cerr << "ParameterType not supplied!" << std::endl;
+                    exit(1);
+                }
+            }
         }
-//        for (int j = 0; j < cities[i].deltaDistances.size(); ++j) {
-//            outputs.emplace_back(cities[i].deltaDistances[j]);
-//        }
-    }
-    return std::make_shared<InputLayer>(outputs);
-}
-
-void InitializeWorld() {
-    UpdateUniverseConstants();
-    InitializePlanets(universeSize);
-}
-
-int main() {
-    InitializeWorld();
-
-//    std::shared_ptr<InputLayer> inputLayer = SetNetworkInputs();
-    std::vector<double> outputs = {1,1,1,1};
-    std::shared_ptr<InputLayer> inputLayer = std::make_shared<InputLayer>(outputs);
-    std::vector<int> layerSizes = {2, 2, 2};
-//    using new_weight_t = std::vector<std::shared_ptr<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>>>;
-    weight_t in_weights = GetRandomWeights(layerSizes, (int)layerSizes.size(), (int)inputLayer->numInputs);
-    bias_t in_biases = GetRandomBiases(layerSizes, (int)layerSizes.size());
-    NeuralNetwork neuralNetwork = NeuralNetwork(inputLayer->numInputs, layerSizes, in_weights, in_biases);
-
-    neuralNetwork.SetInputs(inputLayer);
-    neuralNetwork.Solve();
-
-    for (const auto & value : neuralNetwork.GetOutputVector()) {
-        std::cout << std::to_string(value) << "\n";
+        weights.push_back(weightMatrix);
     }
 
-    int newPosition = neuralNetwork.GetHighestNeuronActivationById();
+    return weights;
+}
 
-    std::cout << "New Position is: " + std::to_string(newPosition) << "\n";
-    std::cout << "Executed successfully! " <<  std::endl;
+biases_matrix_t Chrysanthemum::getNewBiases(std::vector<int>& layerSizes, ParameterType type) {
+    biases_matrix_t biases;
+
+    for (int numBiases : layerSizes) {
+        Eigen::Matrix<double, Eigen::Dynamic, 1> biasVector;
+        biasVector.resize(numBiases, 1);
+        for (int j = 0; j < numBiases; j++) {
+            if (type == RANDOM) {
+                biasVector[j] = helpers::GetRandomNormalized();
+            } else if (type == STANDARD) {
+                biasVector[j] = 1;
+            } else {
+                std::cerr << "ParameterType not supplied!" << std::endl;
+                exit(1);
+            }
+        }
+        biases.push_back(biasVector);
+    }
+    return biases;
 }

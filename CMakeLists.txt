@@ -3,9 +3,29 @@ project(Chrysanthemum VERSION 0.1.0)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(Chrysanthemum src/Chrysanthemum.cpp src/NeuralNetwork.cpp include/NeuralNetwork.h src/Layer.cpp include/Layer.h src/Neuron.cpp include/Neuron.h src/helpers.cpp include/helpers.h include/Chrysanthemum.h src/City.cpp include/City.h)
+set(sources ${sources}
+        src/Chrysanthemum.cpp
+        src/NeuralNetwork.cpp
+        src/Layer.cpp
+        src/helpers.cpp
+        src/City.cpp
+        )
+set(includes ${includes}
+        include/Chrysanthemum.h
+        include/City.h
+        include/helpers.h
+        include/Layer.h
+        include/NeuralNetwork.h
+        )
+
+add_executable(Chrysanthemum src/main.cpp ${sources} ${includes})
+add_executable(Chrysanthemum_Tests tests/Chrysanthemum_tests.cpp tests/Chrysanthemum_tests.h ${sources} ${includes})
+add_executable(NeuralNetwork_Tests tests/NeuralNetwork_tests.cpp tests/NeuralNetwork_tests.h ${sources} ${includes})
 
 find_package(jsoncpp CONFIG REQUIRED)
 find_package(eigen3 CONFIG REQUIRED)
 
 target_link_libraries(Chrysanthemum PRIVATE jsoncpp_object jsoncpp_static JsonCpp::JsonCpp)
+target_link_libraries(Chrysanthemum_Tests PRIVATE jsoncpp_object jsoncpp_static JsonCpp::JsonCpp)
+target_link_libraries(NeuralNetwork_Tests PRIVATE jsoncpp_object jsoncpp_static JsonCpp::JsonCpp)
+

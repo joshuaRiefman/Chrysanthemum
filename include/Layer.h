@@ -5,24 +5,17 @@
 #ifndef CHRYSANTHEMUM_LAYER_H
 #define CHRYSANTHEMUM_LAYER_H
 
-#include "Neuron.h"
+#include "../external/Eigen/Eigen"
 
 struct Layer {
-    std::vector<std::unique_ptr<Neuron>> neurons;
+    Eigen::VectorXd activations;
+
+    Eigen::VectorXd inputs;
+    Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> weights;
+    Eigen::VectorXd biases;
+
+    explicit Layer(long numOutputs, long numInputs, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>& weights, Eigen::VectorXd& biases);
+
 };
-
-struct HiddenLayer : Layer {
-    std::vector<double> inputs;
-
-    explicit HiddenLayer(size_t numOutputs, size_t numInputs);
-};
-
-struct InputLayer : Layer {
-    std::vector<double> network_inputs;
-    size_t numInputs;
-
-    explicit InputLayer(const std::vector<double>&inputs);
-};
-
 
 #endif //CHRYSANTHEMUM_LAYER_H

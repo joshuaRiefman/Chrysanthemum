@@ -5,33 +5,24 @@
 #ifndef CHRYSANTHEMUM_NEURALNETWORK_H
 #define CHRYSANTHEMUM_NEURALNETWORK_H
 
-#include "Neuron.h"
 #include "Layer.h"
 #include "helpers.h"
-#include "../external/Eigen/Eigen"
 
-using weight_t = Eigen::Matrix<std::shared_ptr<std::vector<double>>, Eigen::Dynamic, Eigen::Dynamic>;
-using bias_t = Eigen::Matrix<std::shared_ptr<double>, Eigen::Dynamic, Eigen::Dynamic>;
+typedef std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>> weights_tensor_t;
+typedef std::vector<Eigen::VectorXd> biases_matrix_t;
 
-struct NeuralNetwork {
-    weight_t weights;
-    bias_t biases;
-    std::vector<std::unique_ptr<HiddenLayer>> layers;
-    std::shared_ptr<InputLayer> inputLayer;
-    size_t size;
-
-    explicit NeuralNetwork(size_t numNetworkInputs, const std::vector<int> &layerSizes, const weight_t &in_weights, const bias_t &in_biases);
-
-    void Solve();
-    void SetInputs(std::shared_ptr<InputLayer> input);
-    int GetHighestNeuronActivationById();
-    std::vector<double> GetOutputVector();
+class NeuralNetwork {
+    size_t size; // number of layers
+    std::unique_ptr<weights_tensor_t> weights_tensor;
+    std::unique_ptr<biases_matrix_t> biases_tensor;
+    std::vector<std::unique_ptr<Layer>> layers;
+public:
+    std::vector<double> outputs;
+    explicit NeuralNetwork(int numInputs, const std::vector<int>& layerSizes, std::unique_ptr<weights_tensor_t>& weights_tensor, std::unique_ptr<biases_matrix_t>& biases_tensor);
+    void solve(std::vector<double> &inputs);
+//    int getHighestNeuronActivationById();
+//    std::vector<double> getOutputVector();
 };
-
-weight_t GetRandomWeights(std::vector<int> layerSizes, int numLayers, int numInputs);
-
-bias_t GetRandomBiases(std::vector<int> layerSizes, int numLayers);
-
 
 
 #endif //CHRYSANTHEMUM_NEURALNETWORK_H
