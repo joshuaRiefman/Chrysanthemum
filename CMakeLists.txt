@@ -8,11 +8,9 @@ set(sources ${sources}
         src/NeuralNetwork.cpp
         src/Layer.cpp
         src/helpers.cpp
-        src/City.cpp
         )
 set(includes ${includes}
         include/Chrysanthemum.h
-        include/City.h
         include/helpers.h
         include/Layer.h
         include/NeuralNetwork.h
