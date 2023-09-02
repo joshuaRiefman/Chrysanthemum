@@ -8,7 +8,6 @@
 #include <string>
 #include <iostream>
 #include <fstream>
-#include "City.h"
 #include "NeuralNetwork.h"
 #include "../external/jsoncpp/json/json.h"
 
