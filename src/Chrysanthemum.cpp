@@ -1,9 +1,5 @@
 #include "../include/Chrysanthemum.h"
 
-void print() {
-    std::cout << "Here!" << "\n";
-}
-
 weights_tensor_t Chrysanthemum::getNewWeights(std::vector<int>& layerSizes, int numInputs, ParameterType type) {
     weights_tensor_t weights;
 
@@ -12,8 +8,8 @@ weights_tensor_t Chrysanthemum::getNewWeights(std::vector<int>& layerSizes, int 
         const int rows = layerSizes[i];
         const int columns = i == 0 ? numInputs : layerSizes[i - 1];
         weightMatrix.resize(rows, columns);
-        for (int j = 0; j < rows; ++j) {
-            for (int k = 0; k < columns; ++k) {
+        for (int j = 0; j < rows; j++) {
+            for (int k = 0; k < columns; k++) {
                 if (type == RANDOM) {
                     weightMatrix(j, k) = helpers::GetRandomNormalized();
                 } else if (type == STANDARD) {

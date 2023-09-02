@@ -4,6 +4,26 @@
 
 #include "helpers_tests.h"
 
+int test_MaxInArray() {
+
+}
+
+int test_ReLU() {
+
+}
+
+int test_Sum() {
+
+}
+
+int test_GetRandomNormalized() {
+
+}
+
+int test_GetDuration() {
+
+}
+
 int main() {
     std::cout << "Hello World!" << std::endl;
 }

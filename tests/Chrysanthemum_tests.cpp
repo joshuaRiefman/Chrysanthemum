@@ -3,7 +3,13 @@
 //
 
 #include "Chrysanthemum_tests.h"
+#include "../external/cpputest/include/CppUTest/TestHarness.h"
 
-int main() {
-    std::cout << "Hello World!" << std::endl;
+TEST_GROUP(FirstTestGroup)
+        {
+        };
+
+TEST(FirstTestGroup, FirstTest)
+{
+    FAIL("Fail me!");
 }

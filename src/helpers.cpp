@@ -4,11 +4,11 @@
 
 #include "../include/helpers.h"
 
-int helpers::MaxInArray(std::vector<int> *array) {
+int helpers::MaxInArray(std::vector<int>& array) {
     int max = 0;
 
-    for (int i = 0; i < array->size(); i++) {
-        if ((*array)[i] > max) { max = (*array)[i]; }
+    for (int i = 0; i < array.size(); i++) {
+        if (array[i] > max) { max = array[i]; }
     }
 
     return max;
@@ -18,11 +18,11 @@ double helpers::ReLU(double value) {
     return value > 0 ? value : 0;
 }
 
-int helpers::Sum(std::vector<int> *array) {
+int helpers::Sum(std::vector<int>& array) {
     int result = 0;
 
-    for (int i = 0; i < array->size(); i++) {
-        result += (*array)[i];
+    for (int i = 0; i < array.size(); i++) {
+        result += array[i];
     }
 
     return result;
