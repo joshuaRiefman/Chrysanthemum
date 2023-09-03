@@ -25,10 +25,14 @@ find_package(eigen3 CONFIG REQUIRED)
 
 # GTest and Testing
 set(tests ${tests}
-        tests/Chrysanthemum_tests.cpp)
+        tests/Chrysanthemum_tests.cpp
+        tests/helpers_tests.cpp
+        tests/Layer_tests.cpp
+        tests/NeuralNetwork_tests.cpp
+        )
 find_package(GTest REQUIRED)
 
-add_executable(RunTests tests/tests.h tests/tests.cpp ${tests})
+add_executable(RunTests tests/tests.cpp ${tests} ${sources} ${includes})
 target_link_libraries(RunTests PRIVATE GTest::gtest_main)
 
 include(GoogleTest)

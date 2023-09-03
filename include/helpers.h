@@ -5,6 +5,7 @@
 #ifndef CHRYSANTHEMUM_HELPERS_H
 #define CHRYSANTHEMUM_HELPERS_H
 
+
 #include <vector>
 #include <random>
 #include <chrono>
@@ -12,6 +13,7 @@
 
 class helpers {
 public:
+    // TODO: Make this generic with a constraint that the type is numeric!
     static int MaxInArray(std::vector<int>& array);
 
     static double ReLU(double value);
@@ -22,6 +24,5 @@ public:
 
     static long GetDuration(const std::chrono::time_point<std::chrono::system_clock>& start);
 };
-
 
 #endif //CHRYSANTHEMUM_HELPERS_H
