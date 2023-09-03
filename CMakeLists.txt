@@ -23,11 +23,13 @@ set(includes ${includes}
 add_executable(Chrysanthemum src/main.cpp ${sources} ${includes})
 find_package(eigen3 CONFIG REQUIRED)
 
-## GTest and Testing
+# GTest and Testing
+set(tests ${tests}
+        tests/Chrysanthemum_tests.cpp)
 find_package(GTest REQUIRED)
 
-add_executable(Tests tests/tests.h tests/tests.cpp)
-target_link_libraries(Tests PRIVATE GTest::gtest_main)
+add_executable(RunTests tests/tests.h tests/tests.cpp ${tests})
+target_link_libraries(RunTests PRIVATE GTest::gtest_main)
 
 include(GoogleTest)
-gtest_discover_tests(Tests)
+gtest_discover_tests(RunTests)

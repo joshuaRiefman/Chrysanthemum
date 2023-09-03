@@ -2,8 +2,8 @@
 // Created by Joshua Riefman on 2023-09-02.
 //
 
-#include "tests.h"
 #include <iostream>
+#include "tests.h"
 
 // Demonstrate some basic assertions.
 TEST(HelloTest, BasicAssertions) {

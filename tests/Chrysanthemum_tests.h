@@ -6,6 +6,7 @@
 #define CHRYSANTHEMUM_CHRYSANTHEMUM_TESTS_H
 
 #include "../include/Chrysanthemum.h"
+#include "../external/googletest/googletest/include/gtest/gtest.h"
 
 class Chrysanthemum_tests {
 };
