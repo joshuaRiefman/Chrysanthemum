@@ -1,6 +1,10 @@
 #include "../include/Chrysanthemum.h"
 
 weights_tensor_t Chrysanthemum::getNewWeights(std::vector<int>& layerSizes, int numInputs, ParameterType type) {
+    if (numInputs < 1 || layerSizes.empty()) {
+        throw std::invalid_argument("Invalid arguments provided to getNewWeights!");
+    }
+
     weights_tensor_t weights;
 
     for (int i = 0; i < layerSizes.size(); i++) {
@@ -15,7 +19,7 @@ weights_tensor_t Chrysanthemum::getNewWeights(std::vector<int>& layerSizes, int 
                 } else if (type == STANDARD) {
                     weightMatrix(j, k) = 1;
                 } else {
-                    std::cerr << "ParameterType not supplied!" << std::endl;
+                    std::cerr << "Invalid ParameterType (not of value STANDARD or RANDOM)!" << std::endl;
                     exit(1);
                 }
             }
@@ -27,6 +31,10 @@ weights_tensor_t Chrysanthemum::getNewWeights(std::vector<int>& layerSizes, int 
 }
 
 biases_matrix_t Chrysanthemum::getNewBiases(std::vector<int>& layerSizes, ParameterType type) {
+    if (layerSizes.empty()) {
+        throw std::invalid_argument("Empty layerSizes provided to getNewBiases!");
+    }
+
     biases_matrix_t biases;
 
     for (int numBiases : layerSizes) {
@@ -38,7 +46,7 @@ biases_matrix_t Chrysanthemum::getNewBiases(std::vector<int>& layerSizes, Parame
             } else if (type == STANDARD) {
                 biasVector[j] = 1;
             } else {
-                std::cerr << "ParameterType not supplied!" << std::endl;
+                std::cerr << "Invalid ParameterType (not of value STANDARD or RANDOM)!" << std::endl;
                 exit(1);
             }
         }

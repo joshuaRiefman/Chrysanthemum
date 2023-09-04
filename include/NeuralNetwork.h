@@ -17,7 +17,6 @@ private:
     private:
         char* message;
     public:
-        explicit InvalidConfiguration(char* message);
         explicit InvalidConfiguration(const std::string& message);
 
         char* what();
@@ -29,6 +28,7 @@ private:
     std::unique_ptr<biases_matrix_t> biases_tensor;
     std::vector<std::unique_ptr<Layer>> layers;
 public:
+    //TODO: outputs should be readonly!
     std::vector<double> outputs;
     void verifyConfiguration();
     explicit NeuralNetwork(int numInputs, const std::vector<int>& layerSizes, std::unique_ptr<weights_tensor_t>& weights_tensor, std::unique_ptr<biases_matrix_t>& biases_tensor);

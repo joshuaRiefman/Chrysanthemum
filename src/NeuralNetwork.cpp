@@ -19,15 +19,15 @@ void NeuralNetwork::solve(std::vector<double> &inputs) {
 
     // perform NN calculations using matrix manipulations: weights * inputs + biases
     for (int i = 0; i < size; i++) {
-        layers[i]->activations = layers[i]->weights * layers[i]->inputs + layers[i]->biases;
+        layers[i]->evaluate();
 
         // apply ReLU and propagate activation to the input of the subsequent layer
         for (int j = 0; j < layers[i]->activations.size(); j++) {
             // for the last layer, fill the output vector instead
             if (i == size - 1) {
-                this->outputs.push_back(helpers::ReLU(layers[i]->activations(j, 0)));
+                this->outputs.push_back(layers[i]->activations(j, 0));
             } else {
-                layers[i+1]->inputs(j, 0) = helpers::ReLU(layers[i]->activations(j, 0));
+                layers[i+1]->inputs(j, 0) = layers[i]->activations(j, 0);
             }
         }
     }
@@ -46,7 +46,7 @@ NeuralNetwork::NeuralNetwork(const int numInputs, const std::vector<int>& layerS
     }
 
     try {
-        verifyConfiguration();
+        this->verifyConfiguration();
     } catch (InvalidConfiguration& exception) {
         std::cout << exception.what() << std::endl;
         throw;
@@ -55,20 +55,16 @@ NeuralNetwork::NeuralNetwork(const int numInputs, const std::vector<int>& layerS
 
 void NeuralNetwork::verifyConfiguration() {
     for (int i = 0; i < size; i++) {
-        if (layers[i]->weights.cols() != layers[i]->inputs.size()) {
+        if (layers[i]->weights.cols() != layers[i]->numInputs) {
             throw InvalidConfiguration("Invalid weight column size!");
         }
-        if (layers[i]->weights.rows() != layers[i]->activations.size()) {
+        if (layers[i]->weights.rows() != layers[i]->numOutputs) {
             throw InvalidConfiguration("Invalid weight row size!");
         }
-        if (layers[i]->biases.size() != layers[i]->activations.size()) {
+        if (layers[i]->biases.size() != layers[i]->numOutputs) {
             throw InvalidConfiguration("Invalid biases length!");
         }
     }
-}
-
-NeuralNetwork::InvalidConfiguration::InvalidConfiguration(char *message) {
-    this->message = message;
 }
 
 NeuralNetwork::InvalidConfiguration::InvalidConfiguration(const std::string& message) {

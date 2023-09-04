@@ -9,7 +9,6 @@
 #include <iostream>
 #include <fstream>
 #include "NeuralNetwork.h"
-#include "../external/jsoncpp/json/json.h"
 
 class Chrysanthemum {
 public:

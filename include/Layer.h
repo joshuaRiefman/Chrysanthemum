@@ -8,14 +8,17 @@
 #include "../external/Eigen/Eigen"
 
 struct Layer {
-    Eigen::VectorXd activations;
-
-    Eigen::VectorXd inputs;
+    //TODO: Make weights, biases, activations readonly with setters/getters
+    //TODO: Make matrix sizes template parameters
     Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> weights;
     Eigen::VectorXd biases;
+    Eigen::VectorXd activations;
+    Eigen::VectorXd inputs;
+    int numInputs;
+    int numOutputs; // number of neurons
 
     explicit Layer(long numOutputs, long numInputs, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>& weights, Eigen::VectorXd& biases);
-
+    void evaluate();
 };
 
 #endif //CHRYSANTHEMUM_LAYER_H
