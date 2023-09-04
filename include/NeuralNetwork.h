@@ -22,17 +22,18 @@ private:
         char* what();
     };
 
+    bool outputsAreValid;
     size_t size; // number of layers
     size_t numInputs; // number of inputs to the network
+    std::vector<double> outputs;
     std::unique_ptr<weights_tensor_t> weights_tensor;
     std::unique_ptr<biases_matrix_t> biases_tensor;
     std::vector<std::unique_ptr<Layer>> layers;
 public:
-    //TODO: outputs should be readonly!
-    std::vector<double> outputs;
     void verifyConfiguration();
     explicit NeuralNetwork(int numInputs, const std::vector<int>& layerSizes, std::unique_ptr<weights_tensor_t>& weights_tensor, std::unique_ptr<biases_matrix_t>& biases_tensor);
     std::vector<double> solve(const std::vector<double> &inputs);
+    std::vector<double> getOutputs();
 };
 
 

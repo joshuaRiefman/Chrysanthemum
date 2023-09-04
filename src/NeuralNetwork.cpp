@@ -32,6 +32,7 @@ std::vector<double> NeuralNetwork::solve(const std::vector<double> &inputs) {
         }
     }
 
+    outputsAreValid = true;
     return outputs;
 }
 
@@ -40,6 +41,7 @@ NeuralNetwork::NeuralNetwork(const int numInputs, const std::vector<int>& layerS
     this->numInputs = numInputs;
     this->weights_tensor = std::move(weights_tensor);
     this->biases_tensor = std::move(biases_tensor);
+    this->outputsAreValid = false;
 
     for (int i = 0; i < layerSizes.size(); i++) {
         int numLayerOutputs = layerSizes.at(i);
@@ -66,6 +68,14 @@ void NeuralNetwork::verifyConfiguration() {
         if (layer->biases.size() != layer->numOutputs) {
             throw InvalidConfiguration("Invalid biases length!");
         }
+    }
+}
+std::vector<double> NeuralNetwork::getOutputs() {
+    if (outputsAreValid) {
+        return this->outputs;
+    } else {
+        // TODO: Change this exception to something proper
+        throw std::invalid_argument("Trying to extract outputs of uncomputed neural network!");
     }
 }
 

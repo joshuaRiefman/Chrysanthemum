@@ -9,5 +9,6 @@ int main() {
     NeuralNetwork neuralNetwork = NeuralNetwork((int)inputs.size(), layerSizes, weights, biases);
     neuralNetwork.solve(inputs);
 
+    std::vector<double> outputs = neuralNetwork.getOutputs();
     std::cout << "Executed successfully! " <<  std::endl;
 }
