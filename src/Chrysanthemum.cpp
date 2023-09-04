@@ -14,13 +14,15 @@ weights_tensor_t Chrysanthemum::getNewWeights(std::vector<int>& layerSizes, int 
         weightMatrix.resize(rows, columns);
         for (int j = 0; j < rows; j++) {
             for (int k = 0; k < columns; k++) {
-                if (type == RANDOM) {
-                    weightMatrix(j, k) = helpers::GetRandomNormalized();
-                } else if (type == STANDARD) {
-                    weightMatrix(j, k) = 1;
-                } else {
-                    std::cerr << "Invalid ParameterType (not of value STANDARD or RANDOM)!" << std::endl;
-                    exit(1);
+                switch (type) {
+                    case RANDOM:
+                        weightMatrix(j, k) = helpers::GetRandomNormalized();
+                        break;
+                    case STANDARD:
+                        weightMatrix(j, k) = 1;
+                        break;
+                    default:
+                        throw std::invalid_argument("ParameterType not matched with case!");
                 }
             }
         }
@@ -41,13 +43,15 @@ biases_matrix_t Chrysanthemum::getNewBiases(std::vector<int>& layerSizes, Parame
         Eigen::Matrix<double, Eigen::Dynamic, 1> biasVector;
         biasVector.resize(numBiases, 1);
         for (int j = 0; j < numBiases; j++) {
-            if (type == RANDOM) {
-                biasVector[j] = helpers::GetRandomNormalized();
-            } else if (type == STANDARD) {
-                biasVector[j] = 1;
-            } else {
-                std::cerr << "Invalid ParameterType (not of value STANDARD or RANDOM)!" << std::endl;
-                exit(1);
+            switch (type) {
+                case RANDOM:
+                    biasVector[j] = helpers::GetRandomNormalized();
+                    break;
+                case STANDARD:
+                    biasVector[j] = 1;
+                    break;
+                default:
+                    throw std::invalid_argument("ParameterType not matched with case!");
             }
         }
         biases.push_back(biasVector);
