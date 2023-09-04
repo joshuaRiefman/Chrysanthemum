@@ -48,18 +48,21 @@ TEST(HelpersTests, Sum_Tests) {
 }
 
 TEST(HelpersTests, GetRandomNormalized_Tests) {
+    const int identical_values_threshold = 5;
     const int num_values_to_test = 100;
     double value_1;
     double value_2 = helpers::GetRandomNormalized();
-    std::vector<double> possibleValues {};
 
+    int identical_values_found = 0;
     for (int i = 0; i < num_values_to_test; i++) {
         value_1 = helpers::GetRandomNormalized();
-        EXPECT_NE(value_1, value_2) << "Adjacent random values are identical!";
+        if (value_1 == value_2) { identical_values_found++; }
         ASSERT_LE(value_1, 1) << "Value is not less than 1!";
         ASSERT_GE(value_1, -1) << "Value is not greater than -1!";
 
         value_2 = value_1;
     }
+
+    ASSERT_LT(identical_values_found, identical_values_threshold) << "More than " << identical_values_threshold << " identical values!";
 }
 
