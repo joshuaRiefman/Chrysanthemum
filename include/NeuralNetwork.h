@@ -32,7 +32,7 @@ public:
     std::vector<double> outputs;
     void verifyConfiguration();
     explicit NeuralNetwork(int numInputs, const std::vector<int>& layerSizes, std::unique_ptr<weights_tensor_t>& weights_tensor, std::unique_ptr<biases_matrix_t>& biases_tensor);
-    void solve(std::vector<double> &inputs);
+    std::vector<double> solve(const std::vector<double> &inputs);
 };
 
 

@@ -7,7 +7,7 @@
 #include <utility>
 
 
-void NeuralNetwork::solve(std::vector<double> &inputs) {
+std::vector<double> NeuralNetwork::solve(const std::vector<double> &inputs) {
     if (inputs.size() != this->numInputs) {
         throw InvalidConfiguration("Number of inputs supplied to NN does not match the number designated when the NN was constructed!");
     }
@@ -31,6 +31,8 @@ void NeuralNetwork::solve(std::vector<double> &inputs) {
             }
         }
     }
+
+    return outputs;
 }
 
 NeuralNetwork::NeuralNetwork(const int numInputs, const std::vector<int>& layerSizes, std::unique_ptr<weights_tensor_t>& weights_tensor, std::unique_ptr<biases_matrix_t>& biases_tensor) {
