@@ -10,6 +10,7 @@
 #include <fstream>
 #include "NeuralNetwork.h"
 
+// TODO: Maybe should be a namespace? We will never be constructing a Chrysanthemum object.
 class Chrysanthemum {
 public:
     enum ParameterType {

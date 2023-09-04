@@ -7,21 +7,13 @@
 
 #include "Layer.h"
 #include "helpers.h"
+#include "exceptions.h"
 
 typedef std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>> weights_tensor_t;
 typedef std::vector<Eigen::VectorXd> biases_matrix_t;
 
 class NeuralNetwork {
 private:
-    class InvalidConfiguration : public std::exception {
-    private:
-        char* message;
-    public:
-        explicit InvalidConfiguration(const std::string& message);
-
-        char* what();
-    };
-
     bool outputsAreValid;
     size_t size; // number of layers
     size_t numInputs; // number of inputs to the network

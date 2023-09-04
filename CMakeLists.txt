@@ -12,13 +12,13 @@ set(sources ${sources}
         src/NeuralNetwork.cpp
         src/Layer.cpp
         src/helpers.cpp
-        )
+        src/exceptions.cpp)
 set(includes ${includes}
         include/Chrysanthemum.h
         include/helpers.h
         include/Layer.h
         include/NeuralNetwork.h
-        )
+        include/exceptions.h)
 
 add_executable(Chrysanthemum src/main.cpp ${sources} ${includes})
 find_package(eigen3 CONFIG REQUIRED)
@@ -28,8 +28,7 @@ set(tests ${tests}
         tests/Chrysanthemum_tests.cpp
         tests/helpers_tests.cpp
         tests/Layer_tests.cpp
-        tests/NeuralNetwork_tests.cpp
-        )
+        tests/NeuralNetwork_tests.cpp)
 find_package(GTest REQUIRED)
 
 add_executable(RunTests tests/tests.cpp ${tests} ${sources} ${includes})

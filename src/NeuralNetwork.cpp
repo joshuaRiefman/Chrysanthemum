@@ -9,7 +9,7 @@
 
 std::vector<double> NeuralNetwork::solve(const std::vector<double> &inputs) {
     if (inputs.size() != this->numInputs) {
-        throw InvalidConfiguration("Number of inputs supplied to NN does not match the number designated when the NN was constructed!");
+        throw ChrysanthemumExceptions::InvalidConfiguration("Number of inputs supplied to NN does not match the number designated when the NN was constructed!");
     }
 
     // load inputs into first layer
@@ -51,7 +51,7 @@ NeuralNetwork::NeuralNetwork(const int numInputs, const std::vector<int>& layerS
 
     try {
         this->verifyConfiguration();
-    } catch (InvalidConfiguration& exception) {
+    } catch (ChrysanthemumExceptions::InvalidConfiguration& exception) {
         std::cout << exception.what() << std::endl;
         throw;
     }
@@ -59,15 +59,7 @@ NeuralNetwork::NeuralNetwork(const int numInputs, const std::vector<int>& layerS
 
 void NeuralNetwork::verifyConfiguration() {
     for (const std::unique_ptr<Layer>& layer: layers) {
-        if (layer->weights.cols() != layer->numInputs) {
-            throw InvalidConfiguration("Invalid weight column size!");
-        }
-        if (layer->weights.rows() != layer->numOutputs) {
-            throw InvalidConfiguration("Invalid weight row size!");
-        }
-        if (layer->biases.size() != layer->numOutputs) {
-            throw InvalidConfiguration("Invalid biases length!");
-        }
+        layer->verifyConfiguration();
     }
 }
 std::vector<double> NeuralNetwork::getOutputs() {
@@ -77,15 +69,4 @@ std::vector<double> NeuralNetwork::getOutputs() {
         // TODO: Change this exception to something proper
         throw std::invalid_argument("Trying to extract outputs of uncomputed neural network!");
     }
-}
-
-NeuralNetwork::InvalidConfiguration::InvalidConfiguration(const std::string& message) {
-    const int length = (int)message.length();
-    char* char_array = new char[length + 1];
-    strcpy(char_array, message.c_str());
-    this->message = char_array;
-}
-
-char* NeuralNetwork::InvalidConfiguration::what() {
-    return message;
 }

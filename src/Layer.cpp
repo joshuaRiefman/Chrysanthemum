@@ -23,3 +23,15 @@ void Layer::evaluate() {
         this->activations(i, 0) = helpers::ReLU(this->activations(i, 0));
     }
 }
+
+void Layer::verifyConfiguration() {
+    if (weights.cols() != numInputs) {
+        throw ChrysanthemumExceptions::InvalidConfiguration("Invalid weight column size!");
+    }
+    if (weights.rows() != numOutputs) {
+        throw ChrysanthemumExceptions::InvalidConfiguration("Invalid weight row size!");
+    }
+    if (biases.size() != numOutputs) {
+        throw ChrysanthemumExceptions::InvalidConfiguration("Invalid biases length!");
+    }
+}
