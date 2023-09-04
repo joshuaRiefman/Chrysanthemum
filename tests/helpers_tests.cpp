@@ -47,7 +47,7 @@ TEST(HelpersTests, Sum_Tests) {
     }, std::invalid_argument) << "Empty array exception not thrown when empty array encountered!";
 }
 
-TEST(HelperTests, GetRandomNormalized_Tests) {
+TEST(HelpersTests, GetRandomNormalized_Tests) {
     const int num_values_to_test = 100;
     double value_1;
     double value_2 = helpers::GetRandomNormalized();
