@@ -54,14 +54,14 @@ NeuralNetwork::NeuralNetwork(const int numInputs, const std::vector<int>& layerS
 }
 
 void NeuralNetwork::verifyConfiguration() {
-    for (int i = 0; i < size; i++) {
-        if (layers[i]->weights.cols() != layers[i]->numInputs) {
+    for (const std::unique_ptr<Layer>& layer: layers) {
+        if (layer->weights.cols() != layer->numInputs) {
             throw InvalidConfiguration("Invalid weight column size!");
         }
-        if (layers[i]->weights.rows() != layers[i]->numOutputs) {
+        if (layer->weights.rows() != layer->numOutputs) {
             throw InvalidConfiguration("Invalid weight row size!");
         }
-        if (layers[i]->biases.size() != layers[i]->numOutputs) {
+        if (layer->biases.size() != layer->numOutputs) {
             throw InvalidConfiguration("Invalid biases length!");
         }
     }
