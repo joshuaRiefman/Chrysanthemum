@@ -3,5 +3,4 @@ Packages
 cmake-build-debug
 .idea
 build
-external/googletest
 old
