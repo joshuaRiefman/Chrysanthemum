@@ -12,18 +12,19 @@ class Layer {
 private:
     Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> weights;
     Eigen::VectorXd biases;
-public:
-    //TODO: Make activations readonly with setters/getters
-    //TODO: Make matrix sizes template parameters
     Eigen::VectorXd activations;
     Eigen::VectorXd inputs;
-    // TODO: Make these readonly!
+public:
     int numInputs;
     int numOutputs; // number of neurons
 
     explicit Layer(long numOutputs, long numInputs, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>& weights, Eigen::VectorXd& biases);
-    void evaluate();
+    void calculate();
     void verifyConfiguration();
+    void setInputs(Eigen::VectorXd &new_inputs);
+    void setInput(double value, int index);
+    Eigen::VectorXd getActivations();
+    double getActivation(int index);
 };
 
 #endif //CHRYSANTHEMUM_LAYER_H
