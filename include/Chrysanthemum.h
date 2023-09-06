@@ -10,16 +10,14 @@
 #include <fstream>
 #include "NeuralNetwork.h"
 
-// TODO: Maybe should be a namespace? We will never be constructing a Chrysanthemum object.
-class Chrysanthemum {
-public:
+namespace Chrysanthemum {
     enum ParameterType {
         STANDARD,
         RANDOM
     };
 
-    static weights_tensor_t getNewWeights(std::vector<int>& layerSizes, int numInputs, ParameterType type = STANDARD);
-    static biases_matrix_t getNewBiases(std::vector<int>& layerSizes, ParameterType type = STANDARD);
-};
+    weights_tensor_t getNewWeights(std::vector<int>& layerSizes, int numInputs, ParameterType type = STANDARD);
+    biases_matrix_t getNewBiases(std::vector<int>& layerSizes, ParameterType type = STANDARD);
+}
 
 #endif //CHRYSANTHEMUM_CHRYSANTHEMUM_H

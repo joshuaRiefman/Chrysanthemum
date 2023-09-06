@@ -10,19 +10,15 @@
 #include <random>
 #include <chrono>
 #include <ctime>
-// TODO: Make this into a namespace!
-class helpers {
-public:
-    // TODO: Make this generic with a constraint that the type is numeric!
-    static int MaxInArray(std::vector<int>& array);
 
-    static double ReLU(double value);
+namespace helpers {
+    int MaxInArray(std::vector<int>& array);
 
-    static int Sum(std::vector<int>& array);
+    double ReLU(double value);
 
-    static double GetRandomNormalized();
+    int Sum(std::vector<int>& array);
 
-    static long GetDuration(const std::chrono::time_point<std::chrono::system_clock>& start);
-};
+    double GetRandomNormalized();
+}
 
 #endif //CHRYSANTHEMUM_HELPERS_H
