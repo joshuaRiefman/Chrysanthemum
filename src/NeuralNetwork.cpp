@@ -13,21 +13,21 @@ std::vector<double> NeuralNetwork::solve(const std::vector<double> &inputs) {
     }
 
     // load inputs into first layer
-    for (int i = 0; i < layers[0]->inputs.size(); i++) {
-        layers[0]->inputs[i] = inputs[i];
+    for (int i = 0; i < layers[0]->numInputs; i++) {
+        layers[0]->setInput(inputs[i], i);
     }
 
     // perform NN calculations using matrix manipulations: weights * inputs + biases
     for (int i = 0; i < size; i++) {
-        layers[i]->evaluate();
+        layers[i]->calculate();
 
         // apply ReLU and propagate activation to the input of the subsequent layer
-        for (int j = 0; j < layers[i]->activations.size(); j++) {
+        for (int j = 0; j < layers[i]->numOutputs; j++) {
             // for the last layer, fill the output vector instead
             if (i == size - 1) {
-                this->outputs.push_back(layers[i]->activations(j, 0));
+                this->outputs.push_back(layers[i]->getActivation(j));
             } else {
-                layers[i+1]->inputs(j, 0) = layers[i]->activations(j, 0);
+                layers[i+1]->setInput(layers[i]->getActivation(j), j);
             }
         }
     }
@@ -62,11 +62,11 @@ void NeuralNetwork::verifyConfiguration() {
         layer->verifyConfiguration();
     }
 }
+
 std::vector<double> NeuralNetwork::getOutputs() {
     if (outputsAreValid) {
         return this->outputs;
     } else {
-        // TODO: Change this exception to something proper
-        throw std::invalid_argument("Trying to extract outputs of uncomputed neural network!");
+        throw ChrysanthemumExceptions::PrematureAccess("Trying to extract outputs of an uncomputed neural network!");
     }
 }

@@ -17,11 +17,11 @@ TEST(LayerTests, EvaluationTests) {
 
         Eigen::VectorXd inputs {{1, 1, 1}};
         Layer simpleLayer(numOutputs, numInputs, weights, biases);
-        simpleLayer.inputs = inputs;
-        simpleLayer.evaluate();
+        simpleLayer.setInputs(inputs);
+        simpleLayer.calculate();
 
         Eigen::Vector2d expected_output {{4, 4}};
-        EXPECT_EQ(simpleLayer.activations, expected_output);
+        EXPECT_EQ(simpleLayer.getActivations(), expected_output);
     }
 
     {
@@ -35,11 +35,11 @@ TEST(LayerTests, EvaluationTests) {
 
         Eigen::VectorXd inputs {{-1, -1, -1}};
         Layer simpleLayer(numOutputs, numInputs, weights, biases);
-        simpleLayer.inputs = inputs;
-        simpleLayer.evaluate();
+        simpleLayer.setInputs(inputs);
+        simpleLayer.calculate();
 
         Eigen::Vector2d expected_output {{0, 0}};
-        EXPECT_EQ(simpleLayer.activations, expected_output);
+        EXPECT_EQ(simpleLayer.getActivations(), expected_output);
     }
 
 }

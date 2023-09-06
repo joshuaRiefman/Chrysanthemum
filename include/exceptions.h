@@ -17,6 +17,15 @@ namespace ChrysanthemumExceptions {
 
         char* what();
     };
+
+    class PrematureAccess : public std::exception {
+    private:
+        char* message;
+    public:
+        explicit PrematureAccess(const std::string& message);
+
+        char* what();
+    };
 }
 
 #endif//CHRYSANTHEMUM_EXCEPTIONS_H
