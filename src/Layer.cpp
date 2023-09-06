@@ -2,34 +2,58 @@
 // Created by Joshua Riefman on 2023-02-20.
 //
 
-#include "Layer.h"
+#include <utility>
 
+#include "../include/Layer.h"
+#include "../include/helpers.h"
 
-Layer::Layer(int numOutputs, int numInputs) {
-    for (int i = 0; i < numOutputs; ++i) {
-        outputs.emplace_back();
-    }
-
-    for (int i = 0; i < numInputs; ++i) {
-        inputs.emplace_back();
-    }
+Layer::Layer(long numOutputs, long numInputs, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>& weights, Eigen::VectorXd& biases) {
+    this->activations.resize(numOutputs);
+    this->inputs.resize(numInputs);
+    this->weights = std::move(weights);
+    this->biases = std::move(biases);
+    this->numInputs = (int)numInputs;
+    this->numOutputs = (int)numOutputs;
 }
 
-
-Layer::Layer() = default;
-
-Layer Layer::CreateLayer(int numOutputs, int numInputs) {
-    return {numOutputs, numInputs};
-}
-
-InputLayer::InputLayer(vector<double> *INPUTS) {
-    d_inputs = *INPUTS;
-
-    outputs.resize(d_inputs.size());
-
-    for (int i = 0; i < outputs.size(); ++i) {
-        outputs[i].activation = d_inputs[i];
+// perform NN calculations using matrix manipulations: weights * inputs + biases
+void Layer::calculate() {
+    this->activations = this->weights * this->inputs + this->biases;
+    for (int i = 0; i < this->activations.size(); i++) {
+        this->activations(i, 0) = helpers::ReLU(this->activations(i, 0));
     }
 }
 
-InputLayer::InputLayer() = default;
+void Layer::verifyConfiguration() {
+    if (activations.size() != numOutputs) {
+        throw ChrysanthemumExceptions::InvalidConfiguration("Wrong number of neurons!");
+    }
+    if (inputs.size() != numInputs) {
+        throw ChrysanthemumExceptions::InvalidConfiguration("Wrong size of inputs!");
+    }
+    if (weights.cols() != numInputs) {
+        throw ChrysanthemumExceptions::InvalidConfiguration("Invalid weight column size!");
+    }
+    if (weights.rows() != numOutputs) {
+        throw ChrysanthemumExceptions::InvalidConfiguration("Invalid weight row size!");
+    }
+    if (biases.size() != numOutputs) {
+        throw ChrysanthemumExceptions::InvalidConfiguration("Invalid biases length!");
+    }
+}
+
+Eigen::VectorXd Layer::getActivations() {
+    return activations;
+}
+
+void Layer::setInputs(Eigen::VectorXd &new_inputs) {
+    this->inputs = new_inputs;
+}
+
+void Layer::setInput(double value, int index) {
+    inputs(index, 0) = value;
+}
+
+double Layer::getActivation(int index) {
+    return activations(index, 0);
+}

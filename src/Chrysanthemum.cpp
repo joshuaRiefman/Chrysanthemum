@@ -1,131 +1,60 @@
-#include "../include/jsoncpp/json/json.h"
-#include "Chrysanthemum.h"
+#include "../include/Chrysanthemum.h"
 
-vector<float> &GetArrayFromJSON(int planetID, const Json::Value *data, std::vector<float> &distances, const std::string &fieldAccessor) {
-    for (int i = 0; i < universeSize; ++i) {
-        distances[i] = (*data)["Planets"][planetID][fieldAccessor][i].asFloat();
-    }
-    return distances;
-}
-
-City ParseCityData(int cityID, int citiesCount) {
-    std::ifstream filePath(DataJSONPath);
-    Json::Reader reader;
-    Json::Value data;
-
-    reader.parse(filePath, data);
-    filePath.close();
-
-    int id = cityID;
-    double distanceFromOrigin = data["distance_from_origin"].asDouble();
-
-    vector<float> distances;
-    distances.resize(citiesCount);
-    distances = GetArrayFromJSON(cityID, &data, distances, "distances");
-
-    vector<float> deltaDistances;
-    deltaDistances.resize(citiesCount);
-    deltaDistances = GetArrayFromJSON(cityID, &data, deltaDistances, "deltaDistances");
-
-    City newCity(id, distances, distanceFromOrigin, deltaDistances, false);
-    return newCity;
-}
-
-void UpdateUniverseConstants() {
-    Json::StreamWriterBuilder builder;
-    builder["commentStyle"] = "None";
-    builder["indentation"] = "    ";
-
-    Json::Value value;
-    value["universeSize"] = (int)universeSize;
-
-    std::ofstream outputFileStream(ConstantsJSONPath);
-    builder.newStreamWriter()->write(value, &outputFileStream);
-
-    outputFileStream.close();
-}
-
-void SetOrigin() {
-    std::ifstream filePath(DataJSONPath);
-    Json::Reader reader;
-    Json::Value data;
-
-    reader.parse(filePath, data);
-    filePath.close();
-
-    originCityID = data["starting_position"].asInt();
-    cities[originCityID].visited = true;
-}
-
-void InitializePlanets(int citiesCount) {
-    cities.resize(citiesCount);
-    for (int i = 0; i < citiesCount; i++)
-    {
-        cities[i] = ParseCityData(i, citiesCount);
+weights_tensor_t Chrysanthemum::getNewWeights(std::vector<int>& layerSizes, int numInputs, ParameterType type) {
+    if (numInputs < 1 || layerSizes.empty()) {
+        throw std::invalid_argument("Invalid arguments provided to getNewWeights!");
     }
 
-    SetOrigin();
-}
+    weights_tensor_t weights;
 
-static InputLayer SetNetworkInputs(vector<int> *planetIDList) {
-    vector<double> outputs;
-    for (int i = 0; i < universeSize; ++i) {
-
-        if (cities[i].visited) {
-            outputs.emplace_back(1);
-        } else { outputs.emplace_back(0); }
-
-        planetIDList->emplace_back(cities[i].id);
-
-        for (int j = 0; j < cities[i].distances.size(); ++j) {
-            outputs.emplace_back(cities[i].distances[j]);
+    for (int i = 0; i < layerSizes.size(); i++) {
+        Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> weightMatrix;
+        const int rows = layerSizes[i];
+        const int columns = i == 0 ? numInputs : layerSizes[i - 1];
+        weightMatrix.resize(rows, columns);
+        for (int j = 0; j < rows; j++) {
+            for (int k = 0; k < columns; k++) {
+                switch (type) {
+                    case RANDOM:
+                        weightMatrix(j, k) = helpers::GetRandomNormalized();
+                        break;
+                    case STANDARD:
+                        weightMatrix(j, k) = 1;
+                        break;
+                    default:
+                        throw std::invalid_argument("ParameterType not matched with case!");
+                }
+            }
         }
-//        for (int j = 0; j < cities[i].deltaDistances.size(); ++j) {
-//            outputs.emplace_back(cities[i].deltaDistances[j]);
-//        }
+        weights.push_back(weightMatrix);
     }
 
-    return InputLayer(&outputs);
+    return weights;
 }
 
-void InitializeWorld() {
-    UpdateUniverseConstants();
-    InitializePlanets(universeSize);
-}
-
-NeuralNetworkConfiguration CreateConfig() {
-    vector<int> planetIDList;
-    InputLayer inputs = SetNetworkInputs(&planetIDList);
-    //2, 4, 4, 3 to stop the error
-    vector<int> layerSizes = {2, 12, 8, 3};
-    Matrix<vector<double>, Dynamic, Dynamic> weights = GetRandomWeights(layerSizes, (int)layerSizes.size(), (int)inputs.outputs.size());
-
-    Matrix<double, Dynamic, Dynamic> biases = GetRandomBiases(layerSizes, (int)layerSizes.size());
-
-    NeuralNetworkConfiguration config = NeuralNetworkConfiguration(layerSizes, inputs, weights, biases, planetIDList);
-    return config;
-}
-
-int main() {
-    auto start = std::chrono::system_clock::now();
-
-    InitializeWorld();
-
-    NeuralNetworkConfiguration config = CreateConfig();
-
-    NeuralNetwork neuralNetwork = NeuralNetwork(&neuralNetwork, &config);
-
-    NeuralNetwork::Solve(&neuralNetwork);
-
-    for (int i = 0; i < neuralNetwork.layers[neuralNetwork.size-1].outputs.size(); i++) {
-        std::cout << std::to_string(neuralNetwork.layers[neuralNetwork.size-1].outputs[i].activation) << std::endl;
+biases_matrix_t Chrysanthemum::getNewBiases(std::vector<int>& layerSizes, ParameterType type) {
+    if (layerSizes.empty()) {
+        throw std::invalid_argument("Empty layerSizes provided to getNewBiases!");
     }
 
-    int newPosition = Neuron::GetHighestNeuronActivationById(&neuralNetwork.layers[3].outputs); //Not getting correct layer
-    //Cities should be put in as inputs in decreasing order in terms of distance
-    std::cout << "New Position is: " + std::to_string(newPosition) << std::endl;
+    biases_matrix_t biases;
 
-    long elapsed_seconds = helpers::GetDuration(start);
-
-    std::cout << "Executed successfully in " + std::to_string(elapsed_seconds) + "s!\n";
+    for (int numBiases : layerSizes) {
+        Eigen::Matrix<double, Eigen::Dynamic, 1> biasVector;
+        biasVector.resize(numBiases, 1);
+        for (int j = 0; j < numBiases; j++) {
+            switch (type) {
+                case RANDOM:
+                    biasVector[j] = helpers::GetRandomNormalized();
+                    break;
+                case STANDARD:
+                    biasVector[j] = 1;
+                    break;
+                default:
+                    throw std::invalid_argument("ParameterType not matched with case!");
+            }
+        }
+        biases.push_back(biasVector);
+    }
+    return biases;
 }

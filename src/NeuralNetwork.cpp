@@ -2,107 +2,71 @@
 // Created by Joshua Riefman on 2023-02-20.
 //
 
-#include "NeuralNetwork.h"
-#include "helpers.h"
+#include "../include/NeuralNetwork.h"
+#include <iostream>
+#include <utility>
 
-NeuralNetworkConfiguration::NeuralNetworkConfiguration(const vector<int> &layerSizes, InputLayer inputs,
-                                                       const Matrix<vector<double>, Dynamic, Dynamic> &weights,
-                                                       const Matrix<double, Dynamic, Dynamic> &biases,
-                                                       const vector<int> &planetIDList)
-                                                       : layerSizes(layerSizes), inputValues(std::move(inputs)), weights(weights), biases(biases), planetIDList(planetIDList) {}
 
-Matrix<double, Dynamic, Dynamic> GetRandomBiases(vector<int> layerSizes, int numLayers) {
-    Matrix<double, Dynamic, Dynamic> biases;
-
-    const int columns = helpers::MaxInArray(&layerSizes);
-    const int rows = numLayers;
-    biases.resize(rows, columns);
-
-    for (int i = 0; i < rows; i++) {
-        for (int j = 0; j < columns; j++) {
-            double randomizedBiases = helpers::GetRandomNormalized();
-
-            biases(i, j) = randomizedBiases;
-        }
+std::vector<double> NeuralNetwork::solve(const std::vector<double> &inputs) {
+    if (inputs.size() != this->numInputs) {
+        throw ChrysanthemumExceptions::InvalidConfiguration("Number of inputs supplied to NN does not match the number designated when the NN was constructed!");
     }
 
-    return biases;
-}
-
-Matrix<vector<double>, Dynamic, Dynamic> GetRandomWeights(vector<int> layerSizes, int numLayers, int numInputs) {
-    Matrix<vector<double>, Dynamic, Dynamic> weights;
-
-    const int columns = helpers::MaxInArray(&layerSizes);
-    const int rows = numLayers;
-    weights.resize(numLayers, columns);
-
-    for (int i = 0; i < rows; i++) {
-        int layerInputCount = i == 0 ? numInputs : layerSizes[i - 1];
-
-        for (int j = 0; j < columns; j++) {
-            vector<double> randomizedWeights;
-            randomizedWeights.resize(layerInputCount);
-
-            for (int k = 0; k < layerInputCount; k++) {
-                randomizedWeights[k] = helpers::GetRandomNormalized();
-            }
-
-            weights(i, j) = randomizedWeights;
-
-        }
+    // load inputs into first layer
+    for (int i = 0; i < layers[0]->numInputs; i++) {
+        layers[0]->setInput(inputs[i], i);
     }
 
-    return weights;
-}
+    // perform NN calculations using matrix manipulations: weights * inputs + biases
+    for (int i = 0; i < size; i++) {
+        layers[i]->calculate();
 
-NeuralNetwork::NeuralNetwork(NeuralNetwork *network, NeuralNetworkConfiguration *config) {
-    int maxNeuronCountPerLayer = helpers::MaxInArray(&config->layerSizes);
-    network->size = (int)config->layerSizes.size();
-    network->layers.resize(network->size);
-    network->weights.resize(network->size, maxNeuronCountPerLayer);
-    network->biases.resize(network->size, maxNeuronCountPerLayer);
-
-    network->weights = config->weights;
-    network->biases = config->biases;
-
-    network->inputLayer = config->inputValues;
-
-    for (int i = 0; i < network->size; i++) {
-        int numOutputs = config->layerSizes[i];
-        int numInputs = i == 0 ? (int)config->inputValues.d_inputs.size() : config->layerSizes[i-1];
-
-        network->layers[i] = Layer::CreateLayer(numOutputs, numInputs);
-    }
-
-    for (int i = 0; i < network->size; i++) {
-        for (int j = 0; j < network->layers[i].outputs.size(); j++) {
-            network->layers[i].outputs[j].weights = network->weights(i, j);
-            network->layers[i].outputs[j].bias = network->biases(i, j);
-        }
-    }
-}
-
-void NeuralNetwork::Solve(NeuralNetwork *network) {
-    for (int i = 0; i < network->layers[0].inputs.size(); ++i) {
-        network->layers[0].inputs[i] = network->inputLayer.outputs[i].activation;
-    }
-
-    for (int i = 0; i < network->size; i++) {
-        Layer *layer = &network->layers[i];
-        if (i != 0) {
-            for (int j = 0; j < layer->inputs.size(); ++j) {
-                layer->inputs[j] = network->layers[i-1].outputs[j].activation;
+        // apply ReLU and propagate activation to the input of the subsequent layer
+        for (int j = 0; j < layers[i]->numOutputs; j++) {
+            // for the last layer, fill the output vector instead
+            if (i == size - 1) {
+                this->outputs.push_back(layers[i]->getActivation(j));
+            } else {
+                layers[i+1]->setInput(layers[i]->getActivation(j), j);
             }
         }
+    }
 
-        for (int j = 0; j < layer->outputs.size(); j++) {
-            for (int k = 0; k < layer->inputs.size(); k++) {
-                layer->outputs[j].activation += layer->inputs[k] * layer->outputs[j].weights[k];
-            }
-            layer->outputs[j].activation += layer->outputs[j].bias;
-            layer->outputs[j].activation = helpers::ReLU(layer->outputs[j].activation);
-        }
+    outputsAreValid = true;
+    return outputs;
+}
+
+NeuralNetwork::NeuralNetwork(const int numInputs, const std::vector<int>& layerSizes, std::unique_ptr<weights_tensor_t>& weights_tensor, std::unique_ptr<biases_matrix_t>& biases_tensor) {
+    this->size = layerSizes.size();
+    this->numInputs = numInputs;
+    this->weights_tensor = std::move(weights_tensor);
+    this->biases_tensor = std::move(biases_tensor);
+    this->outputsAreValid = false;
+
+    for (int i = 0; i < layerSizes.size(); i++) {
+        int numLayerOutputs = layerSizes.at(i);
+        int numLayerInputs = i == 0 ? numInputs : layerSizes.at(i - 1);
+        this->layers.push_back(std::make_unique<Layer>(numLayerOutputs, numLayerInputs, (*this->weights_tensor)[i], (*this->biases_tensor)[i]));
+    }
+
+    try {
+        this->verifyConfiguration();
+    } catch (ChrysanthemumExceptions::InvalidConfiguration& exception) {
+        std::cout << exception.what() << std::endl;
+        throw;
     }
 }
 
-NeuralNetwork::NeuralNetwork() : layers(), size() {}
+void NeuralNetwork::verifyConfiguration() {
+    for (const std::unique_ptr<Layer>& layer: layers) {
+        layer->verifyConfiguration();
+    }
+}
+
+std::vector<double> NeuralNetwork::getOutputs() {
+    if (outputsAreValid) {
+        return this->outputs;
+    } else {
+        throw ChrysanthemumExceptions::PrematureAccess("Trying to extract outputs of an uncomputed neural network!");
+    }
+}

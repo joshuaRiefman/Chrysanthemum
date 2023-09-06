@@ -1,18 +1,38 @@
+# Setup
 cmake_minimum_required(VERSION 3.0.0)
 project(Chrysanthemum VERSION 0.1.0)
 
-include(CTest)
+set(CMAKE_CXX_STANDARD 20)
+
 enable_testing()
 
-set(CMAKE_CXX_STANDARD 14)
+# Application
+set(sources ${sources}
+        src/Chrysanthemum.cpp
+        src/NeuralNetwork.cpp
+        src/Layer.cpp
+        src/helpers.cpp
+        src/exceptions.cpp)
+set(includes ${includes}
+        include/Chrysanthemum.h
+        include/helpers.h
+        include/Layer.h
+        include/NeuralNetwork.h
+        include/exceptions.h)
 
-add_executable(Chrysanthemum src/Chrysanthemum.cpp src/NeuralNetwork.cpp src/NeuralNetwork.h src/Layer.cpp src/Layer.h src/Neuron.cpp src/Neuron.h src/helpers.cpp src/helpers.h src/Chrysanthemum.h src/City.cpp src/City.h)
-
-find_package(jsoncpp CONFIG REQUIRED)
+add_executable(Chrysanthemum src/main.cpp ${sources} ${includes})
 find_package(eigen3 CONFIG REQUIRED)
 
-target_link_libraries(Chrysanthemum PRIVATE jsoncpp_object jsoncpp_static JsonCpp::JsonCpp)
+# GTest and Testing
+set(tests ${tests}
+        tests/Chrysanthemum_tests.cpp
+        tests/helpers_tests.cpp
+        tests/Layer_tests.cpp
+        tests/NeuralNetwork_tests.cpp)
+find_package(GTest REQUIRED)
 
-set(CPACK_PROJECT_NAME ${PROJECT_NAME})
-set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
-include(CPack)
+add_executable(RunTests tests/tests.cpp ${tests} ${sources} ${includes})
+target_link_libraries(RunTests PRIVATE GTest::gtest_main)
+
+include(GoogleTest)
+gtest_discover_tests(RunTests)
